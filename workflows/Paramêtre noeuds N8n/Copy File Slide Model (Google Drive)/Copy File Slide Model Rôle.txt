@@ -1,0 +1,78 @@
+📝 Node : Copy File Slide Model
+
+
+🎯 Objectif
+
+Ce nœud sert à dupliquer automatiquement un modèle de présentation Google Slides (par exemple Modèle bilans questionnaires), 
+afin de générer un document personnalisé pour chaque participant.
+Il crée une copie dans Google Drive qui sera ensuite enrichie avec les placeholders et les graphiques générés en amont.
+
+
+
+⚙️ Paramétrage
+
+ . Credential : connexion via ton compte Google Drive.
+
+ . Resource : File (on travaille sur un fichier).
+
+ . Operation : Copy (on fait une duplication du modèle existant).
+
+ . File : fichier sélectionné dans Google Drive → ici Modèle bilans questionnaires.
+
+ . File Name : (optionnel) → si laissé vide, Google Drive génère un nom du type Copy of [Nom du modèle].
+
+ . Copy in the same folder : activé ✅ → la copie est créée dans le même dossier que le modèle.
+
+
+
+
+
+📥 Entrée
+
+En entrée, ce nœud reçoit :
+
+ . Les données JSON enrichies par le nœud précédent (Graph URL create) :
+
+    . URLs des graphiques QuickChart (radar, barres comparatives, progress bars).
+
+    . Placeholders texte (% global, scores par sous-thème, bilans, etc.).
+
+
+
+📤 Sortie
+
+En sortie, il retourne :
+
+ . id → l’ID du nouveau fichier Google Slides.
+
+ . name → le nom attribué (par défaut Copy of Modèle bilans questionnaires).
+
+ . mimeType → toujours application/vnd.google-apps.presentation.
+
+ . kind → type de ressource Google Drive (drive#file).
+
+
+
+🔗 Exemple JSON de sortie
+
+#########################################################
+{
+  "kind": "drive#file",
+  "id": "1uEUAQY7nZWaRatJltNLUb9wUD3PG-oNhg178p2UEx2M",
+  "name": "Copy of Modèle bilans questionnaires",
+  "mimeType": "application/vnd.google-apps.presentation"
+}             
+                 ## Exemple (Not Use) ##       
+
+#########################################################
+
+
+
+
+👉 Ce nœud est la porte d’entrée du processus de personnalisation des rapports :
+
+ 1- Il prend le modèle Slides vierge.
+
+ 2- Crée une copie dédiée au participant.
+
+ 3- Cette copie servira ensuite à injecter tous les placeholders (textes, scores, images des graphiques).

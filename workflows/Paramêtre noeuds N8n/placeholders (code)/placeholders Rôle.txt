@@ -1,0 +1,160 @@
+🟡 placeholders
+
+Rôle
+
+Ce nœud est un nœud Code (JavaScript) en mode Run Once for All Items.
+Il transforme le rapport structuré de Build_report en un dictionnaire de placeholders 
+(clé → valeur) qui seront remplacés dans le modèle Google Slides/PDF.
+
+
+
+Fonctionnement du script
+
+
+1) Entrée
+
+---------------------------
+const report = $json || {};
+---------------------------
+
+ . Récupère le rapport généré par Build_report.
+
+
+
+2) Helper pour formatage en %
+
+-----------------------------------------
+function pctFmt(n) {
+  return `${Number(n || 0).toFixed(0)}%`;
+}
+-----------------------------------------
+
+ . Formate les nombres en pourcentages arrondis (ex : 59 → 59%).
+
+
+
+3) Initialisation du dictionnaire
+
+------------------------
+const placeholders = {};
+------------------------
+
+ . Objet final qui contiendra toutes les paires clé/valeur.
+
+
+
+4) Placeholders globaux
+
+-------------------------------------------------------------
+placeholders["DATE"]       = report.horodateur || "";
+placeholders["GLOBAL_PCT"] = pctFmt(report.global?.pct || 0);
+placeholders["EMAIL"]      = report.email || "";
+-------------------------------------------------------------
+
+ . DATE → Horodateur de la réponse.
+
+ . GLOBAL_PCT → Score global formaté en %.
+
+ . EMAIL → Email du participant.
+
+
+
+5) Placeholders des sessions
+
+----------------------------------------------------------------
+if (Array.isArray(report.sessions)) {
+  for (const s of report.sessions) {
+    const sid = s.id; // "1".."4"
+
+    placeholders[`S${sid}_TITLE`] = s.label || `Session ${sid}`;
+    placeholders[`S${sid}_PCT`]   = pctFmt(s.total_pct || 0);
+----------------------------------------------------------------
+
+ . Pour chaque session (S1, S2, S3, S4) :
+
+    . Sx_TITLE → Nom de la session (ex. Session 1).
+
+    . Sx_PCT → Pourcentage de réussite de la session.
+
+
+
+6) Placeholders des sous-thèmes
+
+--------------------------------------------------------------------------
+if (Array.isArray(s.subthemes)) {
+  s.subthemes.forEach((st, i) => {
+    const n = i + 1;
+    placeholders[`S${sid}_SUB${n}_TITLE`] = st.label || `Sous-thème ${n}`;
+    placeholders[`S${sid}_SUB${n}_PCT`]   = pctFmt(st.pct || 0);
+    placeholders[`S${sid}_SUB${n}_STARS`] = st.stars || "";
+    placeholders[`S${sid}_SUB${n}_BILAN`] = st.bilan || "";
+  });
+}
+--------------------------------------------------------------------------
+
+
+ . Pour chaque sous-thème de la session :
+
+    . Sx_SUBn_TITLE → Nom du sous-thème.
+
+    . Sx_SUBn_PCT → Pourcentage obtenu.
+
+    . Sx_SUBn_STARS → Étoiles ★.
+
+    . Sx_SUBn_BILAN → Texte du bilan (niveau + conseils personnalisés).
+
+
+
+Exemple :
+
+#############################################################################################
+{
+  "S1_SUB1_TITLE": "Navigation & Internet",   ## Eemple (Not Use) ##
+  "S1_SUB1_PCT": "50%",
+  "S1_SUB1_STARS": "★☆☆",
+  "S1_SUB1_BILAN": "Bases fragiles : comprendre navigateur, recherche, différence email/URL."
+}
+##############################################################################################
+
+
+7) Sortie
+
+----------------
+return [{
+  json: {
+    placeholders
+  }
+}];
+----------------
+
+ . La sortie est un objet unique contenant toutes les clés prêtes à remplacer dans Google Slides/Docs.
+
+
+
+Exemple de sortie
+
+#############################################################################################
+{
+  "DATE": "14/09/2025 00:36:15",
+  "GLOBAL_PCT": "59%",
+  "EMAIL": "exemple@mail.com",
+  "S1_TITLE": "Session 1",
+  "S1_PCT": "55%",
+  "S1_SUB1_TITLE": "Navigation & Internet",
+  "S1_SUB1_PCT": "50%",
+  "S1_SUB1_STARS": "★☆☆",
+  "S1_SUB1_BILAN": "Bases fragiles : comprendre navigateur, recherche, différence email/URL."
+}
+##############################################################################################
+
+
+
+Points clés
+
+ . ✅ Centralise toutes les données utiles sous un format clé/valeur simple.
+
+ . ✅ Compatible avec les modèles Google Slides/Docs grâce aux {{PLACEHOLDERS}}.
+
+ . ✅ Prend en charge sessions + sous-thèmes.
+
+ . ⚠️ Les clés doivent correspondre exactement aux placeholders définis dans le modèle (par ex. {{S1_SUB1_TITLE}}).

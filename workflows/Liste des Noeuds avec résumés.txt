@@ -1,0 +1,35 @@
+Voici la liste dans l’ordre du flux :
+
+📌 Liste des nœuds
+
+. Google Sheets Trigger – déclenche le workflow quand une nouvelle ligne est ajoutée.
+
+. Last Questionnaire Retrieval (Code) – récupère la dernière réponse du questionnaire.
+
+. Scoring System (Code) – applique le barème de notation pour calculer les scores.
+
+. AnalyseS (Code) – analyse les résultats et prépare les données pour le rapport.
+
+. Get row(s) in sheet (Google Sheets) – récupère des données de référence (ex. moyennes).
+
+. Build_report (Code) – génère le rapport détaillé avec scores, niveaux et bilans.
+
+. Average Placeholders (Code) – crée les placeholders liés aux scores moyens.
+
+. placeholders (Code) – crée les placeholders liés aux résultats individuels.
+
+. Merge Placeholders (Combine) – fusionne placeholders individuels + placeholders moyens.
+
+. Graph URL create (Code) – génère les URLs des graphiques (QuickChart).
+
+. Copy File Slide Model (Google Drive) – copie un modèle Google Slides pour le rapport.
+
+. HTTP Request Get Slides – récupère les infos de la présentation copiée.
+
+. Extract images from slides (Code) – extrait les images des slides si besoin.
+
+. Http Request Post Slides – remplace les placeholders par les vraies données.
+
+. HTTP Request Transform PDF – convertit la présentation finale en PDF.
+
+. Send a message (Gmail ou autre) – envoie le rapport PDF généré au destinataire.

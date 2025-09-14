@@ -1,0 +1,83 @@
+📨 Node : Send a message (Gmail)
+
+
+🎯 Rôle
+
+
+Ce nœud envoie automatiquement le rapport PDF finalisé à l’adresse e-mail du participant, 
+avec un objet et un corps de message personnalisés.
+Il utilise l’intégration Gmail API (via OAuth2) et attache en pièce jointe le fichier PDF produit à l’étape précédente.
+
+
+
+
+
+⚙️ Paramètres principaux
+
+ . Credential to connect with :
+    Gmail account → connexion OAuth2 configurée pour ton compte Google.
+
+ . Resource :
+   Message → car on envoie un e-mail.
+
+ . Operation :
+   Send.
+
+ . To (destinataire) :
+
+----------------------------------------------------
+{{ $('placeholders').item.json.placeholders.EMAIL }}
+----------------------------------------------------
+
+→ L’adresse e-mail est automatiquement récupérée depuis le rapport (donc dynamique selon le répondant).
+
+
+
+
+ . Subject (objet du mail) :
+
+    "Résultats de votre test de compétences numériques"
+
+ . Email Type :
+    Text (mail au format texte simple).
+
+ . Message (contenu) :
+
+""Bonjour,
+
+Merci d’avoir complété le test de compétences numériques.
+Vous trouverez en pièce jointe votre rapport personnalisé au format PDF.
+
+Cordialement,
+L’équipe d’accompagnement ""
+
+
+
+ . Attachments (pièce jointe) :
+
+   . Attachment Field Name : data
+     → correspond au champ data envoyé par le nœud HTTP Request Transform PDF, qui contient le fichier exporté depuis Google Slides.
+
+
+
+
+📤 Sortie
+
+En sortie, le nœud renvoie les métadonnées du mail envoyé :
+
+ . id : identifiant du message envoyé dans Gmail.
+
+ . threadId : identifiant du fil de discussion.
+
+ . labelIds : état du mail (par ex. SENT, INBOX, UNREAD).
+
+Cela permet de tracer et confirmer que le mail a bien été transmis.
+
+
+
+
+✅ Résumé :
+
+Ce nœud finalise ton workflow en envoyant le rapport PDF personnalisé directement au participant, sans intervention manuelle. 
+
+Tu as donc un pipeline complet Formulaire → Analyse → Graphiques → Slides → PDF → Mail 🎉

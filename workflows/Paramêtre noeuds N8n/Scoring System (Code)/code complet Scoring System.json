@@ -1,0 +1,558 @@
+{
+  "rules": {
+    "split": ", ",
+    "thresholds": { "beginner": 40, "intermediate": 70 },
+    "questions": [
+      {
+        "key": "q1",
+        "label_snippet": "naviguer sur internet",
+        "theme": "bases_web",
+        "scoring_mode": "max",
+        "options": {
+          "Utiliser un navigateur (Chrome; Firefox; Edge…) pour visiter des sites":1,
+          "Cliquer sur des liens pour passer d’une page à l’autre": 1,
+          "Lire un livre de programmation": 0,
+          "Installer un antivirus": 0
+        }
+      },
+      {
+        "key": "q2",
+        "label_snippet": "barre de recherche",
+        "theme": "bases_web",
+        "scoring_mode": "max",
+        "options": {
+          "Trouver des informations sur Internet": 1,
+          "Envoyer un SMS": 0,
+          "Écrire l’adresse d’un site web (URL)": 1,
+          "Installer des programmes": 0
+        }
+      },
+      {
+        "key": "q3",
+        "label_snippet": "ordinateur de bureau et un smartphone",
+        "theme": "bases_web",
+        "scoring_mode": "max",
+        "options": {
+          "L’ordinateur est fixe; le smartphone est portable": 1,
+          "Les deux ont exactement les mêmes usages": 0,
+          "L’ordinateur est souvent plus puissant": 1,
+          "L’ordinateur ne peut pas être connecté au Wi-Fi": 0,
+          "Les deux peuvent utiliser des applications": 1    
+        }
+       }, 
+       {
+         "key": "q4",
+         "label_snippet": "une adresse email et une adresse web",
+         "theme": "bases_web",
+         "scoring_mode": "max",
+         "options": {
+           "L’adresse email sert à envoyer/recevoir des messages": 1,
+           "L’adresse web permet d’accéder à un site Internet": 1,
+           "Les deux sont identiques": 0,
+           "Une adresse email contient souvent “@”": 1,
+           "Une adresse web commence souvent par “http://” ou “https://”": 1,
+           "Une adresse email est obligatoire pour se connecter à Internet": 0,
+           "Une adresse web sert uniquement à envoyer des fichiers": 0
+        }
+      },
+      {
+        "key": "q5",
+        "label_snippet": "“mettre à jour”",
+        "theme": "bases_web",
+        "scoring_mode": "max",
+        "options": {
+          "Installer la dernière version du logiciel": 1,
+          "Ajouter de nouvelles fonctionnalités": 1,
+          "Corriger des failles de sécurité": 1,
+          "Effacer toutes ses données": 0,
+          "Changer de mot de passe": 0,
+          "Supprimer le logiciel": 0
+        }
+      },
+      {
+        "key": "q6",
+        "label_snippet": "“copier-coller”",
+        "theme": "bases_web",
+        "scoring_mode": "max",
+        "options": {
+          "Dupliquer un texte ou un fichier d’un endroit vers un autre": 1,
+          "Utiliser les touches Ctrl+C puis Ctrl+V": 1,
+          "Télécharger un logiciel spécial pour copier-coller": 0,
+          "Lire un texte à haute voix puis l’écrire à nouveau": 0
+        }
+      },
+      {
+        "key": "q7",
+        "label_snippet": "reconnaître si un fichier",
+        "theme": "bases_informatique",
+        "scoring_mode": "max",
+        "options": {
+          "En regardant son extension (.jpg; .docx; .mp4)": 1,
+          "En ouvrant le fichier dans le logiciel adapté": 1,
+          "Grâce à l’icône du fichier (image; texte; vidéo)": 0.5,
+          "En demandant au voisin": 0,
+          "Tous les fichiers sont identiques": 0
+      }
+     },
+     {
+       "key": "q8",
+       "label_snippet": "ouvrir une pièce jointe",
+       "theme": "bases_informatique",
+       "scoring_mode": "max",
+       "options": {
+         "Cliquer sur l’icône ou le lien de la pièce jointe": 1,
+         "Ouvrir le message et choisir “Télécharger”": 1,
+         "Attendre qu’elle s’ouvre toute seule": 0,
+         "Vérifier l’extension du fichier avant d’ouvrir (sécurité)": 0.5,
+         "Lire uniquement l’objet du mail": 0
+      }
+     },
+     {
+       "key": "q9",
+       "label_snippet": "nouveau dossier",
+       "theme": "bases_informatique",
+       "scoring_mode": "max",
+       "options": {
+         "Cliquer droit > Nouveau > Dossier": 1,
+         "Aller dans “Fichier > Nouveau dossier”": 1,
+         "Appuyer sur la touche “Suppr”": 0,
+         "Utiliser le raccourci clavier (par ex. Ctrl+Maj+N": 1,
+         "Télécharger un logiciel spécial pour créer des dossiers": 0,
+         "Aller sur Internet pour créer un dossier": 0
+      }
+     },
+     {
+       "key": "q10",
+       "label_snippet": "enregistrer un fichier",
+       "theme": "bases_informatique",
+       "scoring_mode": "max",
+       "options": {
+         "Cliquer sur “Fichier > Enregistrer sous”": 1,
+         "Copier le fichier sur une clé USB": 0.5,
+         "Prendre une photo de l’écran": 0,
+         "Laisser le fichier ouvert et ne pas l’enregistrer": 0,
+         "Enregistrer dans un dossier choisi (ex. Documents; Bureau)": 1,
+         "Demander à un ami de le sauvegarder": 0
+         
+      }
+     },
+     {
+       "key": "q11",
+       "label_snippet": "boîte de réception email",
+       "theme": "bases_informatique",
+       "scoring_mode": "max",
+       "options": {
+         "L’endroit où arrivent les nouveaux messages": 1,
+         "Une application pour écrire du code": 0,
+         "Un espace où l’on peut lire; répondre et gérer ses mails": 1,
+         "Un répertoire de contacts": 0,
+         "Un logiciel qui bloque les virus": 0
+     }
+    },
+    {
+    "key": "q12",
+    "label_snippet": "email professionnel",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "L’adresse contient souvent le nom de l’entreprise": 1,
+      "Le ton est plus formel": 1,
+      "Les signatures automatiques avec coordonnées sont fréquentes": 1,
+      "Les emails professionnels n’ont jamais de fautes": 0,
+      "L’adresse personnelle utilise souvent @gmail.com; @yahoo.com…": 1,
+      "L’email professionnel contient souvent un logo": 0.5,
+      "Les emails personnels ne peuvent pas avoir de pièces jointes": 0
+    }
+  },
+  {
+    "key": "q13",
+    "label_snippet": "objet clair dans un email",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Pour indiquer rapidement le sujet du message": 1,
+      "Pour faciliter la recherche ultérieure": 1,
+      "Parce que la loi l’exige": 0,
+      "Pour éviter que le mail soit considéré comme spam": 0.5,
+      "Parce que les emails sans objet ne peuvent pas être envoyés": 0,
+      "Pour attirer l’attention du destinataire": 0.5,
+      "Pour remplacer le contenu du message": 0
+    }
+  },
+  {
+    "key": "q14",
+    "label_snippet": "“répondre à tous” dans un email",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Répondre à l’expéditeur et à toutes les personnes en copie": 1,
+      "Créer un nouveau mail vide": 0,
+      "Répondre publiquement sur Internet": 0,
+      "Répondre en incluant les pièces jointes": 0.5,
+      "Répondre avec un accusé de réception": 0
+    }
+  },
+  {
+    "key": "q15",
+    "label_snippet": "partager un document” dans le cloud",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Rendre le fichier accessible à d’autres personnes": 1,
+      "Déposer un fichier sur son bureau": 0,
+      "Donner un lien avec droits de lecture ou d’édition": 1,
+      "Imprimer le document et le donner à un collègue": 0,
+      "Le rendre public sur Internet sans contrôle": 0
+    }
+  },
+  {
+    "key": "q16",
+    "label_snippet": "messagerie instantanée",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Un service pour échanger des messages en temps réel": 1,
+      "Une boîte email traditionnelle": 0,
+      "Un outil pour envoyer des photos; vidéos; emojis": 0.5,
+      "Un service accessible sur ordinateur et smartphone": 1,
+      "Un réseau social public uniquement": 0,
+      "Une messagerie qui ne fonctionne qu’en entreprise": 0
+    }
+  },
+  {
+    "key": "q17",
+    "label_snippet": "message public",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Le message public est visible par tout le monde": 1,
+      "Le message privé est visible uniquement par la personne ciblée": 1,
+      "Les deux sont visibles par les amis uniquement": 0,
+      "Un message public peut être partagé": 1,
+      "Un message privé peut être lu par tout le réseau": 0,
+      "Un message privé s’appelle aussi “DM”": 1
+    }
+  },
+  {
+    "key": "q18",
+    "label_snippet": "“outil collaboratif”",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Un logiciel permettant de travailler à plusieurs sur le même document": 1,
+      "Une plateforme de jeux en ligne": 0,
+      "Un espace pour stocker des fichiers et y accéder ensemble": 0.5,
+      "Une application qui sert uniquement aux développeurs": 0,
+      "Un outil de visioconférence intégré": 0.5
+    }
+  },
+  {
+    "key": "q19",
+    "label_snippet": "calendrier en ligne partagé",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Un outil où plusieurs personnes peuvent consulter/ajouter des événements": 1,
+      "Un logiciel de traitement de texte": 0,
+      "Une fonction dans Google Calendar ou Outlook": 1,
+      "Un calendrier que tout le monde peut modifier": 0.5,
+      "Un site web de météo": 0
+    }
+  },
+  {
+    "key": "q20",
+    "label_snippet": "organiser une visioconférence",
+    "theme": "bases_informatique",
+    "scoring_mode": "max",
+    "options": {
+      "Envoyer un lien d’invitation par email": 1,
+      "Utiliser un outil comme Zoom; Teams ou Meet": 1,
+      "Se réunir uniquement en présentiel": 0,
+      "Activer la caméra et le micro": 0.5,
+      "Utiliser uniquement les SMS": 0,
+      "Programmer la réunion dans un calendrier partagé": 1
+    }
+    },
+    {
+    "key": "q21",
+    "label_snippet": "antivirus",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Un programme qui protège contre les logiciels malveillants": 1,
+      "Un logiciel qui accélère Internet": 0,
+      "Un outil qui bloque les virus informatiques": 1,
+      "Une extension obligatoire pour tous les navigateurs": 0,
+      "Une application qui vérifie les fichiers avant ouverture": 0.5,
+      "Un logiciel qui installe des mises à jour Windows": 0
+    }
+  },
+  {
+    "key": "q22",
+    "label_snippet": "lien dangereux",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Fermer immédiatement la page": 1,
+      "Redémarrer l’ordinateur sans rien faire": 0,
+      "Lancer une analyse antivirus": 1,
+      "Supprimer le navigateur": 0,
+      "Changer ses mots de passe si nécessaire": 1,
+      "Ignorer le problème": 0
+    }
+  },
+  {
+    "key": "q23",
+    "label_snippet": "email frauduleux (phishing)",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Il demande des informations personnelles ou bancaires": 1,
+      "Il contient souvent des fautes d’orthographe": 1,
+      "L’adresse de l’expéditeur semble suspecte": 1,
+      "Il vient toujours de son propre patron": 0,
+      "Le lien affiché ne correspond pas au vrai site": 1,
+      "Il contient forcément une pièce jointe": 0
+    }
+  },
+  {
+    "key": "q24",
+    "label_snippet": "mot de passe partout",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Parce que ça rend tous les comptes vulnérables en cas de piratage": 1,
+      "Parce que c’est plus difficile à retenir": 0,
+      "Parce que certains sites l’interdisent": 0,
+      "Parce que ça évite d’être bloqué si un mot de passe est volé": 1,
+      "Parce que ça empêche d’ouvrir ses emails": 0
+    }
+  },
+  {
+    "key": "q25",
+    "label_snippet": "verrouiller son ordinateur",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Pour éviter l’accès non autorisé": 1,
+      "Pour économiser de la batterie": 0,
+      "Pour protéger les données personnelles": 1,
+      "Parce que c’est obligatoire par la loi": 0,
+      "Pour empêcher quelqu’un d’envoyer des messages à sa place": 1,
+      "Pour accélérer l’appareil": 0
+    }
+  },
+  {
+    "key": "q26",
+    "label_snippet": "SMS suspect",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Ne pas répondre": 1,
+      "Supprimer immédiatement le message": 1,
+      "Cliquer sur le lien pour vérifier": 0,
+      "Transférer le message à l’autorité compétente (ex : 33700)": 1,
+      "Donner de fausses informations pour piéger l’arnaqueur": 0,
+      "Prévenir sa banque": 1
+    }
+  },
+  {
+    "key": "q27",
+    "label_snippet": "authentification",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Se connecter avec un mot de passe et un code reçu par SMS": 1,
+      "Utiliser uniquement une carte bancaire": 0,
+      "Avoir deux comptes au lieu d’un": 0,
+      "Vérifier son identité avec deux méthodes différentes": 1,
+      "Changer de mot de passe tous les jours": 0,
+      "Utiliser une application d’authentification (Google Authenticator; etc.)": 1
+    }
+  },
+  {
+    "key": "q28",
+    "label_snippet": "protection des données",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Respecter la confidentialité des informations privées": 1,
+      "Partager ses informations avec tout le monde": 0,
+      "Contrôler qui a accès à ses données": 1,
+      "Protéger ses fichiers contre le vol": 1,
+      "Supprimer tous ses comptes Internet": 0,
+      "Respecter des lois comme le RGPD": 1
+    }
+  },
+  {
+    "key": "q29",
+    "label_snippet": "applications",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Pour corriger les failles de sécurité": 1,
+      "Pour ajouter de nouvelles fonctionnalités": 1,
+      "Parce que l’ordinateur ne fonctionne pas sinon": 0,
+      "Pour améliorer la stabilité du logiciel": 1,
+      "Pour consommer plus de batterie": 0,
+      "Parce que c’est gratuit": 0
+    }
+  },
+  {
+    "key": "q30",
+    "label_snippet": "connexion sécurisée (HTTPS)",
+    "theme": "cybersecurite",
+    "scoring_mode": "max",
+    "options": {
+      "Les données échangées sont chiffrées": 1,
+      "Le site est forcément officiel": 0,
+      "Le cadenas apparaît dans la barre d’adresse": 1,
+      "La connexion est plus rapide": 0,
+      "Le site ne peut jamais être piraté": 0,
+      "L’adresse commence par “https://”": 1
+    }
+    },
+  {
+    "key": "q31",
+    "label_snippet": "achat en ligne",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Un achat effectué sur un site HTTPS": 1,
+      "Un achat où l’on paie toujours en liquide": 0,
+      "Un paiement avec authentification (code SMS; 3D Secure)": 1,
+      "Un achat fait uniquement aux heures de bureau": 0,
+      "Vérifier la réputation du site avant d’acheter": 1,
+      "Utiliser un ordinateur public pour payer": 0
+    }
+  },
+  {
+    "key": "q32",
+    "label_snippet": "“cookie” sur un site web",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Un petit fichier enregistré sur l’ordinateur": 1,
+      "Un biscuit qu’on mange devant l’écran": 0,
+      "Un outil qui garde des informations de navigation": 1,
+      "Un virus informatique": 0,
+      "Un moyen de personnaliser la publicité": 1,
+      "Un mot de passe secret": 0
+    }
+  },
+  {
+    "key": "q33",
+    "label_snippet": "reconnaître une fake news",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Le titre est sensationnaliste": 1,
+      "La source n’est pas fiable ou absente": 1,
+      "L’article est vérifié par plusieurs médias": 0,
+      "Il contient souvent des erreurs ou contradictions": 1,
+      "Il est partagé massivement par des comptes suspects": 1,
+      "Les commentaires disent tous que c’est vrai": 0
+    }
+  },
+  {
+    "key": "q34",
+    "label_snippet": "fiabilité d’une information",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Vérifier la source et l’auteur": 1,
+      "Lire uniquement le titre": 0,
+      "Croiser l’information avec plusieurs sites": 1,
+      "Croire tout ce qui circule sur les réseaux sociaux": 0,
+      "Vérifier la date de publication": 1,
+      "Partager sans vérifier pour demander l’avis des amis": 0
+    }
+  },
+  {
+    "key": "q35",
+    "label_snippet": "application bancaire en ligne",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Consulter le solde et les mouvements": 1,
+      "Faire des virements": 1,
+      "Jouer à des jeux gratuits": 0,
+      "Contacter directement son conseiller bancaire": 1,
+      "Retirer de l’argent liquide": 0,
+      "Payer en ligne avec validation sécurisée": 1
+    }
+  },
+  {
+    "key": "q36",
+    "label_snippet": "suivre l’actualité numérique",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Pour rester informé des évolutions du monde digital": 1,
+      "Pour mieux se protéger contre les nouvelles menaces": 1,
+      "Parce que c’est obligatoire à l’école": 0,
+      "Pour découvrir de nouveaux outils utiles": 1,
+      "Pour pouvoir travailler dans tous les métiers du futur": 0.5,
+      "Pour comprendre les tendances qui impactent la vie quotidienne": 1
+    }
+  },
+  {
+    "key": "q37",
+    "label_snippet": "langage de programmation",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Un ensemble d’instructions pour donner des ordres à un ordinateur": 1,
+      "Une langue étrangère comme l’anglais": 0,
+      "Un outil pour créer des applications ou sites web": 1,
+      "Un dictionnaire numérique": 0,
+      "Des langages comme Python; Java ou C++": 1,
+      "Une manière de discuter entre deux ordinateurs via SMS": 0
+    }
+  },
+  {
+    "key": "q38",
+    "label_snippet": "algorithme",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Une suite d’instructions permettant de résoudre un problème": 1,
+      "Un virus informatique": 0,
+      "Un langage de programmation complet": 0,
+      "Un ensemble de règles utilisées par les moteurs de recherche": 1,
+      "Un robot physique": 0.5,
+      "Une recette de cuisine; par analogie": 1
+    }
+  },
+  {
+    "key": "q39",
+    "label_snippet": "intelligence artificielle",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Un système capable de simuler certaines fonctions humaines (ex : reconnaître une image)": 1,
+      "Un humain qui pense très vite": 0,
+      "Un programme qui apprend à partir de données": 1,
+      "Une machine qui ne peut jamais se tromper": 0,
+      "Des applications comme la reconnaissance vocale ou les chatbots": 1,
+      "Un ordinateur utilisé uniquement dans les films": 0
+    }
+  },
+{ 
+    "key": "q40",
+    "label_snippet": "“e-administration”",
+    "theme": "culture_numerique",
+    "scoring_mode": "max",
+    "options": {
+      "Accéder aux services publics en ligne (impôts; CAF; etc.)": 1,
+      "Gérer une administration dans un jeu vidéo": 0,
+      "Déposer ses déclarations sans se déplacer": 1,
+      "Obtenir un rendez-vous à la mairie par téléphone": 0,
+      "Télécharger des formulaires officiels": 1,
+      "Envoyer un courrier postal au centre administratif": 0
+    }
+
+      }
+    ]
+  }
+}

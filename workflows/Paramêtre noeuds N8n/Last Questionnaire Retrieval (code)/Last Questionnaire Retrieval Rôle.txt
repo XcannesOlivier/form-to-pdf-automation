@@ -1,0 +1,122 @@
+🟠 Last Questionnaire Retrieval
+Rôle
+
+
+Ce nœud est un nœud Code (JavaScript) exécuté en mode Run Once for All Items.
+
+Il a pour but de :
+
+ 1- Sélectionner uniquement la dernière réponse dans la feuille Google Sheets, en se basant sur la colonne Horodateur.
+
+ 2- Nettoyer et transformer les réponses pour ne garder que les champs utiles.
+
+ 3- Convertir les réponses multi-choix en tableaux (__arr) pour faciliter le traitement dans les étapes suivantes.
+
+
+Fonctionnement du script
+
+1) Parser la date au format français
+
+------------------------------------------------------------------------------------
+function parseFRDatetime(s) {
+  if (!s) return 0;
+  const m = String(s).match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+  if (!m) return 0;
+  const [ , dd, MM, yyyy, HH, mm, ss ] = m.map(Number);
+  return new Date(yyyy, MM - 1, dd, HH, mm, ss).getTime();
+}
+------------------------------------------------------------------------------------
+
+ . Transforme une date type 14/09/2025 00:36:15 en timestamp exploitable.
+
+ . Si la date est invalide → retourne 0.
+
+
+
+
+2) Trier les réponses et garder la plus récente
+
+--------------------------------------------------------------------------------------------
+const all = $items();
+if (!all.length) return [];
+
+all.sort((a, b) => parseFRDatetime(a.json.Horodateur) - parseFRDatetime(b.json.Horodateur));
+const last = all[all.length - 1].json;
+--------------------------------------------------------------------------------------------
+
+ . Récupère toutes les réponses envoyées par le Google Sheets Trigger.
+
+ . Trie par Horodateur croissant.
+
+ . Sélectionne la dernière réponse.
+
+
+
+
+3) Construire la sortie (objets nettoyés)
+
+-------------------------------------------------
+const SEP = ", ";
+const out = {
+  Horodateur: last["Horodateur"],
+  "Adresse e-mail": last["Adresse e-mail"] || ""
+};
+-------------------------------------------------
+
+ . Garde l’Horodateur et l’adresse e-mail comme métadonnées principales.
+
+ . Initialise un objet out qui contiendra les réponses nettoyées.
+
+
+
+
+4) Traitement des réponses multi-choix
+
+---------------------------------------------------------------------------
+for (const [key, val] of Object.entries(last)) {
+  if (key === "Horodateur" || key === "Adresse e-mail") continue;
+
+  if (typeof val === "string" && val.includes(SEP)) {
+    out[`${key}__arr`] = val.split(SEP).map(s => s.trim()).filter(Boolean);
+  }
+}
+----------------------------------------------------------------------------
+
+ . Ignore Horodateur et Adresse e-mail (déjà traités).
+
+ . Si une réponse contient , → considérée comme multi-choix.
+
+ . Convertie en tableau sous la forme :
+
+## Exemple (not use) : Question__arr: ["Réponse 1", "Réponse 2", ...] ##
+
+
+
+
+5) Retour du résultat
+
+-----------------------
+return [{ json: out }];
+-----------------------
+
+ . Retourne un seul objet (la dernière réponse nettoyée) au format JSON.
+
+ . Exemple de sortie simplifiée :
+
+###########################################################################################
+{
+  "Horodateur": "14/09/2025 00:36:15",         ## Exemple (not use) ##
+  "Adresse e-mail": "exemple@mail.com",
+  "Que signifie naviguer sur Internet ?__arr": ["Utiliser un navigateur (Chrome, Firefox)"]
+}
+###########################################################################################
+
+
+
+Points clés
+
+ . ✅ Assure que le workflow ne traite qu’une seule réponse à la fois (la plus récente).
+
+ . ✅ Simplifie les champs multi-choix pour faciliter l’évaluation.
+
+ . ⚠️ Important : la colonne Horodateur doit toujours être présente et bien formatée (jj/mm/aaaa hh:mm:ss).

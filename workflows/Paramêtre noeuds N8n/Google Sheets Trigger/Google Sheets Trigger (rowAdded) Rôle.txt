@@ -1,0 +1,50 @@
+🟢 Google Sheets Trigger (rowAdded)
+Rôle
+
+Ce nœud sert de point de départ du workflow.
+Il surveille une feuille Google Sheets et déclenche automatiquement l’exécution du processus 
+dès qu’une nouvelle réponse est ajoutée au tableau (par exemple, lorsqu’un participant 
+soumet le formulaire Google Forms).
+
+
+Configuration utilisée
+
+ . Credential to connect with :
+   Compte Google Sheets connecté à n8n via OAuth2.
+
+ . Poll Times :
+   Mode = Every Minute → n8n interroge la feuille toutes les minutes pour détecter un changement.
+
+ . Document :
+   Sélectionné depuis la liste → Évaluez vos compétences numériques (réponses).
+
+👉 Il s’agit du fichier Google Sheets généré automatiquement par le Google Formulaire.
+
+ . Sheet :
+   Réponses au formulaire 1 → feuille spécifique contenant toutes les réponses collectées.
+
+ . Trigger On :
+   Row Added → le workflow se lance lorsqu’une nouvelle ligne est insérée (nouvelle réponse).
+
+ . Options :
+   Aucune option supplémentaire activée.
+
+
+
+Fonctionnement concret
+
+ 1- Lorsqu’un utilisateur soumet une réponse au formulaire Google Forms.
+
+ 2- Cette réponse est ajoutée comme nouvelle ligne dans la feuille Réponses au formulaire 1.
+
+ 3- Le nœud Google Sheets Trigger détecte cette ligne et démarre l’exécution du workflow complet.
+
+
+Points importants
+
+ . ⚠️ Si plusieurs réponses arrivent en même temps, n8n les déclenchera une par une, dans l’ordre.
+
+ . ⏱ La fréquence d’interrogation (ici toutes les minutes) peut être ajustée selon le besoin 
+   (plus fréquent = plus rapide mais plus de requêtes API).
+
+ . 🔐 Les identifiants du compte Google doivent rester valides (OAuth2).

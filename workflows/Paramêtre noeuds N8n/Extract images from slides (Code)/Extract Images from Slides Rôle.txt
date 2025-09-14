@@ -1,0 +1,101 @@
+🟢 Extract Images from Slides
+
+🎯 Rôle
+
+
+Ce nœud sert à identifier les images “marqueurs” dans la présentation Google Slides copiée (modèle du rapport).
+Il va parcourir toutes les diapositives et extraire les éléments d’image dont le titre correspond à 
+une clé spécifique (ex : S1_GRAPH_IMG.png).
+Ces clés servent ensuite à remplacer les images par les graphiques générés (QuickChart).
+
+
+
+
+
+⚙️ Configuration
+
+ . Mode : Run Once for All Items
+
+ . Language : JavaScript
+
+
+📝 Script utilisé
+
+-------------------------------------------------------------
+// Entrée : sortie brute du HTTP Request Get Slides
+const slides = $json.slides || [];
+
+// Dictionnaire final
+const images = {};
+
+// Parcours des slides et des objets
+for (const slide of slides) {
+  for (const el of (slide.pageElements || [])) {
+    // On garde uniquement ceux dont le titre finit par .png
+    if (el.title && el.title.endsWith(".png")) {
+      // Ex : titre "S1_GRAPH_IMG.png" → clé "S1_GRAPH_IMG"
+      const key = el.title.replace(".png", "");
+      images[key] = {
+        objectId: el.objectId,
+        altText: el.title
+      };
+    }
+  }
+}
+
+// Sortie unique
+return [{
+  json: {
+    images
+  }
+}];
+---------------------------------------------------------------
+
+
+
+
+📤 Données en sortie
+
+
+Un dictionnaire images :
+
+ . clé : nom du placeholder image (S1_GRAPH_IMG, RADAR_IMG, etc.)
+
+ . objectId : identifiant unique de l’objet dans Google Slides (nécessaire pour l’API).
+
+ . altText : texte alternatif (= le titre de l’objet, ex : S1_GRAPH_IMG.png).
+
+
+
+
+👉 Exemple de sortie :
+
+###################################
+{
+  "images": {
+    "S1_GRAPH_IMG": {
+      "objectId": "g37e4a4fb7e4_5",
+      "altText": "S1_GRAPH_IMG.png"
+    },
+    "S2_GRAPH_IMG": {
+      "objectId": "g37e6cc39b4e3_2",
+      "altText": "S2_GRAPH_IMG.png"
+    },
+    "RADAR_IMG": {
+      "objectId": "g37e6cc39b4e3_0",
+      "altText": "RADAR_IMG.png"
+    }
+  }       ## Exemple (Not Use) ##
+}
+####################################
+
+
+
+
+✅ Points clés
+
+ . Seules les images nommées avec un titre .png dans le modèle Slides sont retenues.
+
+ . Les clés (S1_GRAPH_IMG, S1_PROGRESS_IMG, etc.) sont utilisées plus tard pour injecter les bons graphiques.
+
+ . L’objectId est essentiel : c’est ce qui permet à l’API Google Slides de cibler et remplacer l’image.

@@ -1,0 +1,84 @@
+📝 HTTP Request Transform PDF
+
+
+🎯 Objectif
+
+Exporter la présentation Google Slides (qui a été copiée, enrichie avec les graphiques 
+et les placeholders remplacés) en un fichier PDF final que tu pourras distribuer au participant ou archiver.
+
+
+
+
+
+⚙️ Configuration
+
+ . Méthode : GET
+
+ . URL :
+
+--------------------------------------------------------------------------
+https://docs.google.com/presentation/d/{{$json.presentationId}}/export/pdf
+--------------------------------------------------------------------------
+
+
+👉 {{$json.presentationId}} est récupéré de l’étape précédente (Http Request Post Slides).
+Cela correspond à l’ID unique de la présentation Google Slides générée.
+
+ . Authentification : Predefined Credential Type
+
+ . Credential Type : Google Slides OAuth2 API
+   (permet d’accéder de manière sécurisée aux Slides Google de ton compte)
+
+ . Options :
+
+    . Send Query Parameters : ❌
+
+    . Send Headers : ❌
+
+    . Send Body : ❌
+
+    . Body Content Type : non utilisé, car ici c’est un GET.
+
+
+
+
+
+📤 Sortie
+
+ . L’API retourne le fichier PDF binaire de ta présentation.
+
+ . Dans ton exemple de sortie :
+
+ . File Name : Copy of Modele bilans questionnaires.pdf
+
+ . File Extension : pdf
+
+ . Mime Type : application/pdf
+
+ . File Size : 466 kB
+
+ . Data (binary) : prêt à être téléchargé, stocké, ou envoyé par email.
+
+
+
+🔗 Chaînage
+
+Ce nœud vient juste après le Http Request Post Slides (où tu as injecté tes images et placeholders).
+Il génère une version figée et diffusable de ton rapport sous forme de PDF personnalisé.
+
+
+
+
+
+🚀 Utilisation finale
+
+ . Sauvegarder le PDF dans Google Drive.
+
+ . L’envoyer par email (via un nœud Gmail/Outlook/SMTP).
+
+ . Ou encore automatiser l’envoi via webhook, Slack, etc.
+
+
+
+
+👉 En clair, ce nœud transforme automatiquement ton rapport dynamique Google Slides en livrable PDF final 🎉

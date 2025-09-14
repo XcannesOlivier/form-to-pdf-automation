@@ -1,0 +1,512 @@
+{
+  "name": "Form → PDF v",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1hIa_GGiZ8UbRU_sjZev1f-Kxo7PQuwBcvuYUs5QRiO0",
+          "mode": "list",
+          "cachedResultName": "Évaluez vos compétences numériques (réponses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hIa_GGiZ8UbRU_sjZev1f-Kxo7PQuwBcvuYUs5QRiO0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 438541832,
+          "mode": "list",
+          "cachedResultName": "Réponses au formulaire 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hIa_GGiZ8UbRU_sjZev1f-Kxo7PQuwBcvuYUs5QRiO0/edit#gid=438541832"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -32
+      ],
+      "id": "6ff259de-4d58-4508-b86f-241b4ccded31",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "73PTkCic3IGSpae7",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const report = $json.placeholders || {};   // on cible bien l'objet avec S1_SUBx_PCT\n\n// Palette couleurs par session\nconst colors = {\n  S1: \"rgba(75,192,192,1)\",   // vert\n  S2: \"rgba(255,99,132,1)\",   // rouge\n  S3: \"rgba(255,159,64,1)\",   // orange\n  S4: \"rgba(54,162,235,1)\",   // bleu\n};\n\n// Graphe comparatif (barres par sous-sections)\nfunction compareUrl(sectionId, labels, valuesUser, valuesAvg, colorUser) {\n  return `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify({\n    type: 'bar',\n    data: {\n      labels,\n      datasets: [\n        {\n          label: 'Vos résultats',\n          data: valuesUser,\n          backgroundColor: colorUser\n        },\n        {\n          label: 'Moyenne',\n          data: valuesAvg,\n          backgroundColor: 'rgba(128,128,128,0.7)'\n        }\n      ]\n    },\n   \n  }))}`;\n}\n\n// Graphe radar global\nfunction radarUrl(labels, values) {\n  return `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify({\n    type: 'radar',\n    data: {\n      labels,\n      datasets: [\n        {\n          label: 'Vos résultats globaux',\n          data: values,\n          backgroundColor: 'rgba(54, 162, 235, 0.4)',\n          borderColor: 'rgba(54, 162, 235, 1)',\n          pointBackgroundColor: 'rgba(54, 162, 235, 1)'\n        }\n      ]\n    },\n    options: {\n      scales: {\n        r: { min: 0, max: 100, ticks: { stepSize: 20 } }\n      },\n      plugins: {\n        title: { display: true, text: 'Vue d’ensemble' }\n      }\n    }\n  }))}`;\n}\n\n// Graphe progress bar par session (avec type progressBar)\nfunction progressUrl(sessionId, pct, color) {\n  return `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify({\n    type: 'progressBar',\n    data: {\n      datasets: [\n        {\n          data: [pct],\n          backgroundColor: color\n        }\n      ]\n    },\n    options: {\n      plugins: {\n        datalabels: {\n          display: true,\n          formatter: (val) => val + '%'\n        }\n      }\n    }\n  }))}&width=1250&height=70`;\n}\n\nconst out = {};\n\n// Graphiques par sous-sections (barres comparatives + progress bars)\nfor (let i = 1; i <= 4; i++) {\n  const key = `S${i}`;\n  // Mapping des sous-sections par section\nconst sectionLabels = {\n  S1: [\"Navigation & Internet\", \"Logiciels & Sécurité\", \"Gestion des fichiers\"],\n  S2: [\"Emails & messagerie\", \"Cloud & outils collaboratifs\", \"Réseaux sociaux & visioconférence\"],\n  S3: [\"Protection contre les menaces\", \"Mots de passe & authentification\", \"Vie privée & conformité\"],\n  S4: [\"Services & usages en ligne\", \"Information & actualité numérique\", \"Programmation & intelligence artificielle\"]\n};\n\n// Récupère les bons labels pour la section courante\nconst labels = sectionLabels[key] || [\n  \"Sous-section 1\", \n  \"Sous-section 2\", \n  \"Sous-section 3\"\n];\n\n// Les valeurs utilisateur restent identiques\nconst valuesUser = [\n  Number(String(report[`${key}_SUB1_PCT`] || \"0\").replace(\"%\",\"\")),\n  Number(String(report[`${key}_SUB2_PCT`] || \"0\").replace(\"%\",\"\")),\n  Number(String(report[`${key}_SUB3_PCT`] || \"0\").replace(\"%\",\"\"))\n];\n\n  const valuesAvg = [\n    Number(String(report[`${key}_SUB1_AVG`] || \"0\").replace(\"%\",\"\")),\n    Number(String(report[`${key}_SUB2_AVG`] || \"0\").replace(\"%\",\"\")),\n    Number(String(report[`${key}_SUB3_AVG`] || \"0\").replace(\"%\",\"\"))\n  ];\n\n  const colorUser = colors[key];\n\n  // Graphe comparatif\n  out[`${key}_GRAPH_IMG`] = compareUrl(i, labels, valuesUser, valuesAvg, colorUser);\n\n  // Progress bar style plein\n  const sessionPct = Number(String(report[`${key}_PCT`] || \"0\").replace(\"%\",\"\"));\n  out[`${key}_PROGRESS_IMG`] = progressUrl(i, sessionPct, colorUser);\n}\n\n// Graphe radar global\nconst radarLabels = [\"Compétences numériques de base\", \"Communication & collaboration enligne\", \"Sécurité numérique & protection des données\", \"Culture numérique & usages avancés\"];\nconst radarValues = radarLabels.map((_, i) => {\n  const sid = i + 1;\n  return Number(String(report[`S${sid}_PCT`] || \"0\").replace(\"%\",\"\"));\n});\nout[\"GLOBAL_RADAR_IMG\"] = radarUrl(radarLabels, radarValues);\n\nreturn [{ json: out }];\n\n\n\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -192
+      ],
+      "id": "f6156ac0-51d2-4fd9-87c6-e62fe99871f5",
+      "name": "Graph URL create"
+    },
+    {
+      "parameters": {
+        "url": "=https://slides.googleapis.com/v1/presentations/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSlidesOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -368,
+        288
+      ],
+      "id": "f72ee6a0-a59d-4122-9747-63c69726bf91",
+      "name": "HTTP Request Get Slides",
+      "credentials": {
+        "googleSlidesOAuth2Api": {
+          "id": "E3TaKdjZxMYsSCJu",
+          "name": "Google Slides account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrée = sortie directe de build_report\nconst report = $json || {};\n\n// helper pour formater %\nfunction pctFmt(n) {\n  return `${Number(n || 0).toFixed(0)}%`;\n}\n\n// Dictionnaire final\nconst placeholders = {};\n\n// --- Valeurs globales ---\nplaceholders[\"DATE\"]       = report.horodateur || \"\";\nplaceholders[\"GLOBAL_PCT\"] = pctFmt(report.global?.pct || 0);\nplaceholders[\"EMAIL\"]      = report.email || \"\";\n\n// --- Sessions ---\nif (Array.isArray(report.sessions)) {\n  for (const s of report.sessions) {\n    const sid = s.id; // \"1\"..\"4\"\n\n    placeholders[`S${sid}_TITLE`] = s.label || `Session ${sid}`;\n    placeholders[`S${sid}_PCT`]   = pctFmt(s.total_pct || 0);\n\n    if (Array.isArray(s.subthemes)) {\n      s.subthemes.forEach((st, i) => {\n        const n = i + 1;\n        placeholders[`S${sid}_SUB${n}_TITLE`] = st.label || `Sous-thème ${n}`;\n        placeholders[`S${sid}_SUB${n}_PCT`]   = pctFmt(st.pct || 0);\n        placeholders[`S${sid}_SUB${n}_STARS`] = st.stars || \"\";\n        placeholders[`S${sid}_SUB${n}_BILAN`] = st.bilan || \"\";\n      });\n    }\n  }\n}\n\n// --- Sortie ---\nreturn [{\n  json: {\n    placeholders\n  }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -32
+      ],
+      "id": "4b20540b-73f5-46f1-a3fc-c93c8e4ab90f",
+      "name": "placeholders"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1oDUWSDawVysqbjnPYOmhAFVy5UL9QHXJ0w3kde82Wp4",
+          "mode": "list",
+          "cachedResultName": "moyennes_subthemes-questionnaires",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oDUWSDawVysqbjnPYOmhAFVy5UL9QHXJ0w3kde82Wp4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oDUWSDawVysqbjnPYOmhAFVy5UL9QHXJ0w3kde82Wp4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        -208
+      ],
+      "id": "88635ae6-8179-4192-89ef-75a3083c5be8",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Ue35529pkyLWfv2v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('placeholders').item.json.placeholders.EMAIL }}",
+        "subject": "Résultats de votre test de compétences numériques",
+        "emailType": "text",
+        "message": "Bonjour ,  Merci d’avoir complété le test de compétences numériques. Vous trouverez en pièce jointe votre rapport personnalisé au format PDF.  Ce rapport contient :  Votre score global et votre niveau  Un détail par thème et sous-thème  Des conseils pratiques pour progresser  Nous vous invitons à consulter attentivement vos résultats et à suivre les recommandations afin de renforcer vos compétences numériques.  Si vous avez des questions ou besoin d’accompagnement, n’hésitez pas à répondre à ce mail.  Bien cordialement, ",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        288
+      ],
+      "id": "c8b1e036-823c-4b08-806a-bf06d9ec7236",
+      "name": "Send a message",
+      "webhookId": "27b1f598-f16f-408a-9835-c246d0dc71bd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RXlBls0Jv5PoRDJy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://slides.googleapis.com/v1/presentations/{{ $('Copy File Slide Model').item.json.id }}:batchUpdate\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSlidesOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n     {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S1_BAR_IMG1.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S1_PROGRESS_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S2_BAR_IMG1.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S2_PROGRESS_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S3_BAR_IMG1.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S3_PROGRESS_IMG }}\"\n      }\n     },\n     {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S4_BAR_IMG1.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S4_PROGRESS_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S1_BAR_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S1_PROGRESS_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S2_BAR_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S2_PROGRESS_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S3_BAR_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S3_PROGRESS_IMG }}\"\n      }\n     },\n     {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S4_BAR_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S4_PROGRESS_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.RADAR_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.GLOBAL_RADAR_IMG }}\"\n      }\n     },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S1_GRAPH_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S1_GRAPH_IMG }}\"\n      }\n    },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S2_GRAPH_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S2_GRAPH_IMG }}\"\n      }\n    },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S3_GRAPH_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S3_GRAPH_IMG }}\"\n      }\n    },\n    {\n      \"replaceImage\": {\n        \"imageObjectId\": \"{{ $json.images.S4_GRAPH_IMG.objectId }}\",\n        \"imageReplaceMethod\": \"CENTER_INSIDE\",\n        \"url\": \"{{ $('Graph URL create').item.json.S4_GRAPH_IMG }}\"\n      }\n    },\n     {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(DATE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.DATE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(GLOBAL_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.GLOBAL_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(EMAIL)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.EMAIL }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB1_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB1_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB1_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB1_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB1_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB1_STARS }}\"\n      }\n     },\n     {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB1_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB1_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB2_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB2_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB2_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB2_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB2_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB2_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB2_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB2_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB3_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB3_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB3_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB3_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB3_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB3_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S1_SUB3_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S1_SUB3_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB1_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB1_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB1_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB1_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB1_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB1_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB1_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB1_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB2_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB2_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB2_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB2_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB2_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB2_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB2_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB2_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB3_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB3_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB3_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB3_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB3_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB3_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S2_SUB3_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S2_SUB3_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB1_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB1_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB1_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB1_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB1_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB1_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB1_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB1_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB2_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB2_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB2_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB2_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB2_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB2_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB2_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB2_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB3_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB3_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB3_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB3_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB3_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB3_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S3_SUB3_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S3_SUB3_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB1_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB1_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB1_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB1_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB1_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB1_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB1_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB1_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB2_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB2_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB2_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB2_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB2_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB2_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB2_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB2_BILAN }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB3_TITLE)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB3_TITLE }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB3_PCT)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB3_PCT }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB3_STARS)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB3_STARS }}\"\n      }\n    },\n    {\n      \"replaceAllText\": {\n        \"containsText\": { \"text\": \"(S4_SUB3_BILAN)\", \"matchCase\": true },\n        \"replaceText\": \"{{ $('placeholders').item.json.placeholders.S4_SUB3_BILAN }}\"\n      }\n    }\n  ]\n}\n\n\n\n\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        288
+      ],
+      "id": "2f134235-442d-4a06-b9e0-131cb7394beb",
+      "name": "Http Request Post Slides",
+      "credentials": {
+        "googleSlidesOAuth2Api": {
+          "id": "E3TaKdjZxMYsSCJu",
+          "name": "Google Slides account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrée : sortie brute du HTTP Request Get Slides\nconst slides = $json.slides || [];\n\n// Dictionnaire final\nconst images = {};\n\n// Parcours des slides et des objets\nfor (const slide of slides) {\n  for (const el of (slide.pageElements || [])) {\n    // On garde uniquement ceux dont le titre finit par .png\n    if (el.title && el.title.endsWith(\".png\")) {\n      // Ex : titre \"S1_GRAPH_IMG.png\" → clé \"S1_GRAPH_IMG\"\n      const key = el.title.replace(\".png\", \"\");\n      images[key] = {\n        objectId: el.objectId,\n        altText: el.title\n      };\n    }\n  }\n}\n\n// Sortie unique\nreturn [{\n  json: {\n    images\n  }\n}];\n\n\n\n\n  "
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        288
+      ],
+      "id": "e2c76705-41ae-4856-b1ef-eeecb82d1d83",
+      "name": "Extract images from slides"
+    },
+    {
+      "parameters": {
+        "url": "=https://docs.google.com/presentation/d/{{ $json.presentationId }}/export/pdf\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSlidesOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        288
+      ],
+      "id": "b6ebaa5d-0dc8-48bc-9bda-66d51618a796",
+      "name": "HTTP Request Transform PDF",
+      "credentials": {
+        "googleSlidesOAuth2Api": {
+          "id": "E3TaKdjZxMYsSCJu",
+          "name": "Google Slides account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================= Helpers =================\nconst pct   = (s, m) => (m ? +(100 * s / m).toFixed(1) : 0);\nconst stars = (p) => p < 40 ? \"★☆☆\" : p < 70 ? \"★★☆\" : \"★★★\";\n\n// Bilan générique (fallback)\nconst genericBilan = (p) =>\n  p < 40 ? \"Niveau à consolider : reprenez les bases essentielles.\"\n: p < 70 ? \"Bon socle : poursuivez des exercices ciblés pour progresser.\"\n         : \"Très bonne maîtrise : continuez avec des cas plus avancés.\";\n\nconst levelFromPct = (p) =>\n  p < 40 ? \"Débutant\" : p < 60 ? \"En progrès\" : p < 80 ? \"Compétent\" : \"Expert\";\n\nconst levelKey = (p) =>\n  p < 40 ? \"debutant\" : p < 60 ? \"en_progres\" : p < 80 ? \"competent\" : \"expert\";\n\n// ================= Bilans spécifiques par sous-thème =================\n// Clé = `${sessionId}:${partId}`  →  \"1:1\" .. \"4:3\"\nconst BILANS = {\n  // Session 1\n  \"1:1\": { // Navigation & Internet\n    debutant:   \"Bases fragiles : comprendre navigateur, recherche, différence email/URL.\",\n    en_progres: \"Bases acquises mais confusions sur URL/email/moteur. Continue à explorer.\",\n    competent:  \"Formulaires, téléchargements, onglets multiples. Découvre extensions et réglages.\",\n    expert:     \"Bonne maîtrise : recherche efficace, distinction email/web. Poursuis avec favoris/onglets.\",\n  },\n  \"1:2\": { // Logiciels & Sécurité\n    debutant:   \"Difficultés : mises à jour, copier-coller, pièces jointes sécurisées.\",\n    en_progres: \"Bonnes bases, mais automatismes à renforcer (MAJ, copier-coller, PJ sûres).\",\n    competent:  \"Paramètres, désinstallation propre, partage de PJ lourdes par lien.\",\n    expert:     \"À l’aise avec MAJ, copier-coller, PJ. Explore raccourcis et formats de fichiers.\",\n  },\n  \"1:3\": { // Fichiers & Organisation\n    debutant:   \"Difficultés : distinguer appareils, types de fichiers, créer dossier, enregistrer.\",\n    en_progres: \"Bonnes intuitions, mais progresse sur organisation : dossiers, extensions, emplacements.\",\n    competent:  \"Nommage standard, tri par type, recherche avancée.\",\n    expert:     \"Bonne maîtrise : fichiers, dossiers, enregistrement. Explore sauvegardes et cloud.\",\n  },\n\n  // Session 2\n  \"2:1\": { // Emails & messagerie\n    debutant:   \"Fragile : antivirus, liens/PJ dangereux, mots de passe, verrouillage appareil.\",\n    en_progres: \"Réflexes acquis mais erreurs. Varie les mots de passe, verrouille et reste vigilant.\",\n    competent:  \"Utilise modèles, CC/Cci correctement, partage PJ lourdes par lien.\",\n    expert:     \"Bon réflexes : phishing, mots de passe variés, protection appareil. Sensibilise ton entourage.\",\n  },\n  \"2:2\": { // Cloud & collaboratif\n    debutant:   \"Pas de réflexes sécurité : attention SMS suspects, découvre 2FA et gestion données.\",\n    en_progres: \"Pratiques utiles mais à renforcer : active 2FA, maîtrise données et signalements.\",\n    competent:  \"Permissions fines, modèles d’équipe, intégrations Drive/Docs/Calendar.\",\n    expert:     \"Réflexes solides : 2FA, gestion données, réaction aux SMS frauduleux. Bravo.\",\n  },\n  \"2:3\": { // Réseaux sociaux & visioconf\n    debutant:   \"Bases manquantes : MAJ régulières, connexion https.\",\n    en_progres: \"Réflexes partiels : active MAJ auto, vérifie cadenas https.\",\n    competent:  \"Animation, modération, netiquette.\",\n    expert:     \"Bonne pratique : MAJ régulières, connexions sécurisées. Vérifie aussi sur mobile.\",\n  },\n\n  // Session 3\n  \"3:1\": { // Protection menaces\n    debutant:   \"Repère liens/PJ suspects ; scan antivirus si doute.\",\n    en_progres: \"Identifie phishing/SMS frauduleux, signale (33700), change mots de passe.\",\n    competent:  \"2FA généralisée, MAJ rapides, sensibilise entourage.\",\n    expert:     \"Procédures incidents, sauvegardes chiffrées, outils anti-phishing, veille.\",\n  },\n  \"3:2\": { // Mots de passe & authentification\n    debutant:   \"Bases faibles : boîte de réception, email pro/perso, objet clair, destinataires.\",\n    en_progres: \"Bon niveau mais erreurs : objet précis, vérifie destinataires, contexte formel.\",\n    competent:  \"Clés 2FA/TOTP, révocation accès, codes de secours.\",\n    expert:     \"Maîtrise email : objets, adresses, réponses collectives. Explore signatures et filtres.\",\n  },\n  \"3:3\": { // Vie privée & conformité\n    debutant:   \"Bases à acquérir : partage cloud, messagerie instantanée, public/privé réseaux.\",\n    en_progres: \"Bases présentes mais confusions : pratique partage contrôlé, messages adaptés.\",\n    competent:  \"Export/suppression données, chiffrement, mots de passe pour archives.\",\n    expert:     \"À l’aise : partage, messageries, confidentialité réseaux. Bonne maîtrise.\",\n  },\n\n  // Session 4\n  \"4:1\": { // Services & usages en ligne\n    debutant:   \"Fragile : docs collaboratifs, calendrier partagé, visioconf.\",\n    en_progres: \"Comprend outils, mais pratique : crée doc, planifie événement, rejoins visioconf.\",\n    competent:  \"Paiements, plafonds/alertes, dossiers en ligne complets.\",\n    expert:     \"À l’aise : partage docs, réunions, calendriers. Efficace à distance.\",\n  },\n  \"4:2\": { // Information & actualité\n    debutant:   \"Bases manquantes : site sécurisé, fake news, services publics en ligne.\",\n    en_progres: \"Pratiques utiles mais à renforcer : https, croise sources, démarches admin.\",\n    competent:  \"Analyse biais/financements, suit sources fiables.\",\n    expert:     \"Réflexes solides : achats sécurisés, esprit critique, autonomie admin. Bravo.\",\n  },\n  \"4:3\": { // Programmation & IA\n    debutant:   \"Fragile : cookies, vérif infos, suivre actualité numérique.\",\n    en_progres: \"Bonne intuition mais zones d’ombre : cookies, sources, suivre IA.\",\n    competent:  \"Projets structurés, Git, algos clairs, IA prototypage.\",\n    expert:     \"Bonne compréhension : données, vérif infos, actu numérique/IA. Bravo.\",\n  },\n};\n\n// ================= Données d’entrée =================\nconst a = $input.all()[0].json;\n\n// Index par question: \"q1\"..\"q40\" -> {score,max}\nconst qIndex = new Map();\nfor (const d of (a.details || [])) {\n  qIndex.set(d.key, {\n    score: Number(d.score ?? 0),\n    max:   Number(d.max ?? d.max_score ?? 0),\n  });\n}\n\n// Découpage explicite (corrigé S2)\nconst EXPLICIT_MAP = {\n  \"1\": { \"1\": [\"q1\",\"q2\",\"q4\"], \"2\": [\"q5\",\"q6\",\"q8\"], \"3\": [\"q3\",\"q7\",\"q9\",\"q10\"] },\n  \"2\": { \"1\": [\"q11\",\"q12\",\"q13\",\"q14\",\"q16\"], \"2\": [\"q15\",\"q17\",\"q18\"], \"3\": [\"q19\",\"q20\"] },\n  \"3\": { \"1\": [\"q21\",\"q22\",\"q23\",\"q26\"], \"2\": [\"q24\",\"q25\",\"q27\"], \"3\": [\"q28\",\"q29\",\"q30\"] },\n  \"4\": { \"1\": [\"q31\",\"q35\",\"q40\"], \"2\": [\"q32\",\"q33\",\"q34\",\"q36\"], \"3\": [\"q37\",\"q38\",\"q39\"] },\n};\n\n// Libellés (optionnels)\nconst LABELS = {\n  \"1\": [\"Navigation & Internet\",\"Logiciels & Sécurité\",\"Gestion des fichiers & Organisation\"],\n  \"2\": [\"Emails & messagerie\",\"Cloud & outils collaboratifs\",\"Réseaux sociaux & visioconférence\"],\n  \"3\": [\"Protection contre les menaces\",\"Mots de passe & authentification\",\"Vie privée & conformité\"],\n  \"4\": [\"Services & usages en ligne\",\"Information & actualité numérique\",\"Programmation & intelligence artificielle\"],\n};\n\n// Utils\nconst sumQ = (keys) => {\n  let s = 0, m = 0;\n  for (const k of keys) {\n    const qm = qIndex.get(k) || { score:0, max:0 };\n    s += qm.score; m += qm.max;\n  }\n  return { score: s, max: m, pct: pct(s, m) };\n};\n\nconst subthemeBilan = (sId, pId, p) => {\n  const lk = levelKey(p);\n  const entry = BILANS[`${sId}:${pId}`];\n  return (entry && entry[lk]) ? entry[lk] : genericBilan(p);\n};\n\n// ================= Construction du rapport =================\nconst report = {\n  horodateur: a.horodateur,\n  email: a[\"email\"] || \"\", \n  global: {\n    score: a.total_score,\n    max:   a.total_max,\n    pct:   a.percent,\n    level: a.level || levelFromPct(a.percent),\n    stars: stars(a.percent),\n    bilan: genericBilan(a.percent),\n  },\n  sessions: [],\n};\n\n// Sessions 1..4\nfor (const sId of [\"1\",\"2\",\"3\",\"4\"]) {\n  const mapSess = EXPLICIT_MAP[sId];\n  if (!mapSess) continue;\n\n  const allQs = Array.from(new Set([...(mapSess[\"1\"]||[]), ...(mapSess[\"2\"]||[]), ...(mapSess[\"3\"]||[]) ]));\n  const total = sumQ(allQs);\n\n  const labels = LABELS[sId] || [\"Partie 1\",\"Partie 2\",\"Partie 3\"];\n  const parts = [\"1\",\"2\",\"3\"].map((pid, idx) => {\n    const qs = mapSess[pid] || [];\n    const r  = sumQ(qs);\n    const lvl = levelFromPct(r.pct);\n    return {\n      id: pid,\n      label: labels[idx],\n      questions: qs,\n      score: r.score,\n      max:   r.max,\n      pct:   r.pct,\n      level: lvl,\n      stars: stars(r.pct),\n      bilan: subthemeBilan(sId, pid, r.pct), // 👈 spécifique sous-thème + niveau\n    };\n  });\n\n  report.sessions.push({\n    id: sId,\n    label: `Session ${sId}`,\n    total_score: total.score,\n    total_max:   total.max,\n    total_pct:   total.pct,\n    level:       levelFromPct(total.pct),\n    stars:       stars(total.pct),\n    bilan:       genericBilan(total.pct), // tu peux aussi faire un bilan agrégé si besoin\n    subthemes:   parts,\n  });\n}\n\nreturn [{ json: report }];\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -32
+      ],
+      "id": "34a65495-9e1f-4091-bd66-20004950a058",
+      "name": "Build_report"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrée = liste de lignes avec row_number, clé, somme, n, moyenne\nconst rows = $input.all().map(item => item.json);\n\n// Helper pour formater %\nfunction pctFmt(n) {\n  return `${Number(n || 0).toFixed(0)}%`;\n}\n\nconst placeholders = {};\n\nfor (const r of rows) {\n  if (r.clé && r.moyenne !== undefined) {\n    // Exemple : clé = \"S1_SUB1_AVG\"\n    placeholders[r.clé] = pctFmt(r.moyenne);\n  }\n}\n\nreturn [{\n  json: {\n    placeholders\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -208
+      ],
+      "id": "860d8e49-0307-48bf-a9ae-fd7d3f2abfef",
+      "name": "Average Placeholders"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"rules\": {\n    \"split\": \", \",\n    \"thresholds\": { \"beginner\": 40, \"intermediate\": 70 },\n    \"questions\": [\n      {\n        \"key\": \"q1\",\n        \"label_snippet\": \"naviguer sur internet\",\n        \"theme\": \"bases_web\",\n        \"scoring_mode\": \"max\",\n        \"options\": {\n          \"Utiliser un navigateur (Chrome; Firefox; Edge…) pour visiter des sites\":1,\n          \"Cliquer sur des liens pour passer d’une page à l’autre\": 1,\n          \"Lire un livre de programmation\": 0,\n          \"Installer un antivirus\": 0\n        }\n      },\n      {\n        \"key\": \"q2\",\n        \"label_snippet\": \"barre de recherche\",\n        \"theme\": \"bases_web\",\n        \"scoring_mode\": \"max\",\n        \"options\": {\n          \"Trouver des informations sur Internet\": 1,\n          \"Envoyer un SMS\": 0,\n          \"Écrire l’adresse d’un site web (URL)\": 1,\n          \"Installer des programmes\": 0\n        }\n      },\n      {\n        \"key\": \"q3\",\n        \"label_snippet\": \"ordinateur de bureau et un smartphone\",\n        \"theme\": \"bases_web\",\n        \"scoring_mode\": \"max\",\n        \"options\": {\n          \"L’ordinateur est fixe; le smartphone est portable\": 1,\n          \"Les deux ont exactement les mêmes usages\": 0,\n          \"L’ordinateur est souvent plus puissant\": 1,\n          \"L’ordinateur ne peut pas être connecté au Wi-Fi\": 0,\n          \"Les deux peuvent utiliser des applications\": 1    \n        }\n       }, \n       {\n         \"key\": \"q4\",\n         \"label_snippet\": \"une adresse email et une adresse web\",\n         \"theme\": \"bases_web\",\n         \"scoring_mode\": \"max\",\n         \"options\": {\n           \"L’adresse email sert à envoyer/recevoir des messages\": 1,\n           \"L’adresse web permet d’accéder à un site Internet\": 1,\n           \"Les deux sont identiques\": 0,\n           \"Une adresse email contient souvent “@”\": 1,\n           \"Une adresse web commence souvent par “http://” ou “https://”\": 1,\n           \"Une adresse email est obligatoire pour se connecter à Internet\": 0,\n           \"Une adresse web sert uniquement à envoyer des fichiers\": 0\n        }\n      },\n      {\n        \"key\": \"q5\",\n        \"label_snippet\": \"“mettre à jour”\",\n        \"theme\": \"bases_web\",\n        \"scoring_mode\": \"max\",\n        \"options\": {\n          \"Installer la dernière version du logiciel\": 1,\n          \"Ajouter de nouvelles fonctionnalités\": 1,\n          \"Corriger des failles de sécurité\": 1,\n          \"Effacer toutes ses données\": 0,\n          \"Changer de mot de passe\": 0,\n          \"Supprimer le logiciel\": 0\n        }\n      },\n      {\n        \"key\": \"q6\",\n        \"label_snippet\": \"“copier-coller”\",\n        \"theme\": \"bases_web\",\n        \"scoring_mode\": \"max\",\n        \"options\": {\n          \"Dupliquer un texte ou un fichier d’un endroit vers un autre\": 1,\n          \"Utiliser les touches Ctrl+C puis Ctrl+V\": 1,\n          \"Télécharger un logiciel spécial pour copier-coller\": 0,\n          \"Lire un texte à haute voix puis l’écrire à nouveau\": 0\n        }\n      },\n      {\n        \"key\": \"q7\",\n        \"label_snippet\": \"reconnaître si un fichier\",\n        \"theme\": \"bases_informatique\",\n        \"scoring_mode\": \"max\",\n        \"options\": {\n          \"En regardant son extension (.jpg; .docx; .mp4)\": 1,\n          \"En ouvrant le fichier dans le logiciel adapté\": 1,\n          \"Grâce à l’icône du fichier (image; texte; vidéo)\": 0.5,\n          \"En demandant au voisin\": 0,\n          \"Tous les fichiers sont identiques\": 0\n      }\n     },\n     {\n       \"key\": \"q8\",\n       \"label_snippet\": \"ouvrir une pièce jointe\",\n       \"theme\": \"bases_informatique\",\n       \"scoring_mode\": \"max\",\n       \"options\": {\n         \"Cliquer sur l’icône ou le lien de la pièce jointe\": 1,\n         \"Ouvrir le message et choisir “Télécharger”\": 1,\n         \"Attendre qu’elle s’ouvre toute seule\": 0,\n         \"Vérifier l’extension du fichier avant d’ouvrir (sécurité)\": 0.5,\n         \"Lire uniquement l’objet du mail\": 0\n      }\n     },\n     {\n       \"key\": \"q9\",\n       \"label_snippet\": \"nouveau dossier\",\n       \"theme\": \"bases_informatique\",\n       \"scoring_mode\": \"max\",\n       \"options\": {\n         \"Cliquer droit > Nouveau > Dossier\": 1,\n         \"Aller dans “Fichier > Nouveau dossier”\": 1,\n         \"Appuyer sur la touche “Suppr”\": 0,\n         \"Utiliser le raccourci clavier (par ex. Ctrl+Maj+N\": 1,\n         \"Télécharger un logiciel spécial pour créer des dossiers\": 0,\n         \"Aller sur Internet pour créer un dossier\": 0\n      }\n     },\n     {\n       \"key\": \"q10\",\n       \"label_snippet\": \"enregistrer un fichier\",\n       \"theme\": \"bases_informatique\",\n       \"scoring_mode\": \"max\",\n       \"options\": {\n         \"Cliquer sur “Fichier > Enregistrer sous”\": 1,\n         \"Copier le fichier sur une clé USB\": 0.5,\n         \"Prendre une photo de l’écran\": 0,\n         \"Laisser le fichier ouvert et ne pas l’enregistrer\": 0,\n         \"Enregistrer dans un dossier choisi (ex. Documents; Bureau)\": 1,\n         \"Demander à un ami de le sauvegarder\": 0\n         \n      }\n     },\n     {\n       \"key\": \"q11\",\n       \"label_snippet\": \"boîte de réception email\",\n       \"theme\": \"bases_informatique\",\n       \"scoring_mode\": \"max\",\n       \"options\": {\n         \"L’endroit où arrivent les nouveaux messages\": 1,\n         \"Une application pour écrire du code\": 0,\n         \"Un espace où l’on peut lire; répondre et gérer ses mails\": 1,\n         \"Un répertoire de contacts\": 0,\n         \"Un logiciel qui bloque les virus\": 0\n     }\n    },\n    {\n    \"key\": \"q12\",\n    \"label_snippet\": \"email professionnel\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"L’adresse contient souvent le nom de l’entreprise\": 1,\n      \"Le ton est plus formel\": 1,\n      \"Les signatures automatiques avec coordonnées sont fréquentes\": 1,\n      \"Les emails professionnels n’ont jamais de fautes\": 0,\n      \"L’adresse personnelle utilise souvent @gmail.com; @yahoo.com…\": 1,\n      \"L’email professionnel contient souvent un logo\": 0.5,\n      \"Les emails personnels ne peuvent pas avoir de pièces jointes\": 0\n    }\n  },\n  {\n    \"key\": \"q13\",\n    \"label_snippet\": \"objet clair dans un email\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Pour indiquer rapidement le sujet du message\": 1,\n      \"Pour faciliter la recherche ultérieure\": 1,\n      \"Parce que la loi l’exige\": 0,\n      \"Pour éviter que le mail soit considéré comme spam\": 0.5,\n      \"Parce que les emails sans objet ne peuvent pas être envoyés\": 0,\n      \"Pour attirer l’attention du destinataire\": 0.5,\n      \"Pour remplacer le contenu du message\": 0\n    }\n  },\n  {\n    \"key\": \"q14\",\n    \"label_snippet\": \"“répondre à tous” dans un email\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Répondre à l’expéditeur et à toutes les personnes en copie\": 1,\n      \"Créer un nouveau mail vide\": 0,\n      \"Répondre publiquement sur Internet\": 0,\n      \"Répondre en incluant les pièces jointes\": 0.5,\n      \"Répondre avec un accusé de réception\": 0\n    }\n  },\n  {\n    \"key\": \"q15\",\n    \"label_snippet\": \"partager un document” dans le cloud\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Rendre le fichier accessible à d’autres personnes\": 1,\n      \"Déposer un fichier sur son bureau\": 0,\n      \"Donner un lien avec droits de lecture ou d’édition\": 1,\n      \"Imprimer le document et le donner à un collègue\": 0,\n      \"Le rendre public sur Internet sans contrôle\": 0\n    }\n  },\n  {\n    \"key\": \"q16\",\n    \"label_snippet\": \"messagerie instantanée\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un service pour échanger des messages en temps réel\": 1,\n      \"Une boîte email traditionnelle\": 0,\n      \"Un outil pour envoyer des photos; vidéos; emojis\": 0.5,\n      \"Un service accessible sur ordinateur et smartphone\": 1,\n      \"Un réseau social public uniquement\": 0,\n      \"Une messagerie qui ne fonctionne qu’en entreprise\": 0\n    }\n  },\n  {\n    \"key\": \"q17\",\n    \"label_snippet\": \"message public\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Le message public est visible par tout le monde\": 1,\n      \"Le message privé est visible uniquement par la personne ciblée\": 1,\n      \"Les deux sont visibles par les amis uniquement\": 0,\n      \"Un message public peut être partagé\": 1,\n      \"Un message privé peut être lu par tout le réseau\": 0,\n      \"Un message privé s’appelle aussi “DM”\": 1\n    }\n  },\n  {\n    \"key\": \"q18\",\n    \"label_snippet\": \"“outil collaboratif”\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un logiciel permettant de travailler à plusieurs sur le même document\": 1,\n      \"Une plateforme de jeux en ligne\": 0,\n      \"Un espace pour stocker des fichiers et y accéder ensemble\": 0.5,\n      \"Une application qui sert uniquement aux développeurs\": 0,\n      \"Un outil de visioconférence intégré\": 0.5\n    }\n  },\n  {\n    \"key\": \"q19\",\n    \"label_snippet\": \"calendrier en ligne partagé\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un outil où plusieurs personnes peuvent consulter/ajouter des événements\": 1,\n      \"Un logiciel de traitement de texte\": 0,\n      \"Une fonction dans Google Calendar ou Outlook\": 1,\n      \"Un calendrier que tout le monde peut modifier\": 0.5,\n      \"Un site web de météo\": 0\n    }\n  },\n  {\n    \"key\": \"q20\",\n    \"label_snippet\": \"organiser une visioconférence\",\n    \"theme\": \"bases_informatique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Envoyer un lien d’invitation par email\": 1,\n      \"Utiliser un outil comme Zoom; Teams ou Meet\": 1,\n      \"Se réunir uniquement en présentiel\": 0,\n      \"Activer la caméra et le micro\": 0.5,\n      \"Utiliser uniquement les SMS\": 0,\n      \"Programmer la réunion dans un calendrier partagé\": 1\n    }\n    },\n    {\n    \"key\": \"q21\",\n    \"label_snippet\": \"antivirus\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un programme qui protège contre les logiciels malveillants\": 1,\n      \"Un logiciel qui accélère Internet\": 0,\n      \"Un outil qui bloque les virus informatiques\": 1,\n      \"Une extension obligatoire pour tous les navigateurs\": 0,\n      \"Une application qui vérifie les fichiers avant ouverture\": 0.5,\n      \"Un logiciel qui installe des mises à jour Windows\": 0\n    }\n  },\n  {\n    \"key\": \"q22\",\n    \"label_snippet\": \"lien dangereux\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Fermer immédiatement la page\": 1,\n      \"Redémarrer l’ordinateur sans rien faire\": 0,\n      \"Lancer une analyse antivirus\": 1,\n      \"Supprimer le navigateur\": 0,\n      \"Changer ses mots de passe si nécessaire\": 1,\n      \"Ignorer le problème\": 0\n    }\n  },\n  {\n    \"key\": \"q23\",\n    \"label_snippet\": \"email frauduleux (phishing)\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Il demande des informations personnelles ou bancaires\": 1,\n      \"Il contient souvent des fautes d’orthographe\": 1,\n      \"L’adresse de l’expéditeur semble suspecte\": 1,\n      \"Il vient toujours de son propre patron\": 0,\n      \"Le lien affiché ne correspond pas au vrai site\": 1,\n      \"Il contient forcément une pièce jointe\": 0\n    }\n  },\n  {\n    \"key\": \"q24\",\n    \"label_snippet\": \"mot de passe partout\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Parce que ça rend tous les comptes vulnérables en cas de piratage\": 1,\n      \"Parce que c’est plus difficile à retenir\": 0,\n      \"Parce que certains sites l’interdisent\": 0,\n      \"Parce que ça évite d’être bloqué si un mot de passe est volé\": 1,\n      \"Parce que ça empêche d’ouvrir ses emails\": 0\n    }\n  },\n  {\n    \"key\": \"q25\",\n    \"label_snippet\": \"verrouiller son ordinateur\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Pour éviter l’accès non autorisé\": 1,\n      \"Pour économiser de la batterie\": 0,\n      \"Pour protéger les données personnelles\": 1,\n      \"Parce que c’est obligatoire par la loi\": 0,\n      \"Pour empêcher quelqu’un d’envoyer des messages à sa place\": 1,\n      \"Pour accélérer l’appareil\": 0\n    }\n  },\n  {\n    \"key\": \"q26\",\n    \"label_snippet\": \"SMS suspect\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Ne pas répondre\": 1,\n      \"Supprimer immédiatement le message\": 1,\n      \"Cliquer sur le lien pour vérifier\": 0,\n      \"Transférer le message à l’autorité compétente (ex : 33700)\": 1,\n      \"Donner de fausses informations pour piéger l’arnaqueur\": 0,\n      \"Prévenir sa banque\": 1\n    }\n  },\n  {\n    \"key\": \"q27\",\n    \"label_snippet\": \"authentification\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Se connecter avec un mot de passe et un code reçu par SMS\": 1,\n      \"Utiliser uniquement une carte bancaire\": 0,\n      \"Avoir deux comptes au lieu d’un\": 0,\n      \"Vérifier son identité avec deux méthodes différentes\": 1,\n      \"Changer de mot de passe tous les jours\": 0,\n      \"Utiliser une application d’authentification (Google Authenticator; etc.)\": 1\n    }\n  },\n  {\n    \"key\": \"q28\",\n    \"label_snippet\": \"protection des données\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Respecter la confidentialité des informations privées\": 1,\n      \"Partager ses informations avec tout le monde\": 0,\n      \"Contrôler qui a accès à ses données\": 1,\n      \"Protéger ses fichiers contre le vol\": 1,\n      \"Supprimer tous ses comptes Internet\": 0,\n      \"Respecter des lois comme le RGPD\": 1\n    }\n  },\n  {\n    \"key\": \"q29\",\n    \"label_snippet\": \"applications\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Pour corriger les failles de sécurité\": 1,\n      \"Pour ajouter de nouvelles fonctionnalités\": 1,\n      \"Parce que l’ordinateur ne fonctionne pas sinon\": 0,\n      \"Pour améliorer la stabilité du logiciel\": 1,\n      \"Pour consommer plus de batterie\": 0,\n      \"Parce que c’est gratuit\": 0\n    }\n  },\n  {\n    \"key\": \"q30\",\n    \"label_snippet\": \"connexion sécurisée (HTTPS)\",\n    \"theme\": \"cybersecurite\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Les données échangées sont chiffrées\": 1,\n      \"Le site est forcément officiel\": 0,\n      \"Le cadenas apparaît dans la barre d’adresse\": 1,\n      \"La connexion est plus rapide\": 0,\n      \"Le site ne peut jamais être piraté\": 0,\n      \"L’adresse commence par “https://”\": 1\n    }\n    },\n  {\n    \"key\": \"q31\",\n    \"label_snippet\": \"achat en ligne\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un achat effectué sur un site HTTPS\": 1,\n      \"Un achat où l’on paie toujours en liquide\": 0,\n      \"Un paiement avec authentification (code SMS; 3D Secure)\": 1,\n      \"Un achat fait uniquement aux heures de bureau\": 0,\n      \"Vérifier la réputation du site avant d’acheter\": 1,\n      \"Utiliser un ordinateur public pour payer\": 0\n    }\n  },\n  {\n    \"key\": \"q32\",\n    \"label_snippet\": \"“cookie” sur un site web\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un petit fichier enregistré sur l’ordinateur\": 1,\n      \"Un biscuit qu’on mange devant l’écran\": 0,\n      \"Un outil qui garde des informations de navigation\": 1,\n      \"Un virus informatique\": 0,\n      \"Un moyen de personnaliser la publicité\": 1,\n      \"Un mot de passe secret\": 0\n    }\n  },\n  {\n    \"key\": \"q33\",\n    \"label_snippet\": \"reconnaître une fake news\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Le titre est sensationnaliste\": 1,\n      \"La source n’est pas fiable ou absente\": 1,\n      \"L’article est vérifié par plusieurs médias\": 0,\n      \"Il contient souvent des erreurs ou contradictions\": 1,\n      \"Il est partagé massivement par des comptes suspects\": 1,\n      \"Les commentaires disent tous que c’est vrai\": 0\n    }\n  },\n  {\n    \"key\": \"q34\",\n    \"label_snippet\": \"fiabilité d’une information\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Vérifier la source et l’auteur\": 1,\n      \"Lire uniquement le titre\": 0,\n      \"Croiser l’information avec plusieurs sites\": 1,\n      \"Croire tout ce qui circule sur les réseaux sociaux\": 0,\n      \"Vérifier la date de publication\": 1,\n      \"Partager sans vérifier pour demander l’avis des amis\": 0\n    }\n  },\n  {\n    \"key\": \"q35\",\n    \"label_snippet\": \"application bancaire en ligne\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Consulter le solde et les mouvements\": 1,\n      \"Faire des virements\": 1,\n      \"Jouer à des jeux gratuits\": 0,\n      \"Contacter directement son conseiller bancaire\": 1,\n      \"Retirer de l’argent liquide\": 0,\n      \"Payer en ligne avec validation sécurisée\": 1\n    }\n  },\n  {\n    \"key\": \"q36\",\n    \"label_snippet\": \"suivre l’actualité numérique\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Pour rester informé des évolutions du monde digital\": 1,\n      \"Pour mieux se protéger contre les nouvelles menaces\": 1,\n      \"Parce que c’est obligatoire à l’école\": 0,\n      \"Pour découvrir de nouveaux outils utiles\": 1,\n      \"Pour pouvoir travailler dans tous les métiers du futur\": 0.5,\n      \"Pour comprendre les tendances qui impactent la vie quotidienne\": 1\n    }\n  },\n  {\n    \"key\": \"q37\",\n    \"label_snippet\": \"langage de programmation\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un ensemble d’instructions pour donner des ordres à un ordinateur\": 1,\n      \"Une langue étrangère comme l’anglais\": 0,\n      \"Un outil pour créer des applications ou sites web\": 1,\n      \"Un dictionnaire numérique\": 0,\n      \"Des langages comme Python; Java ou C++\": 1,\n      \"Une manière de discuter entre deux ordinateurs via SMS\": 0\n    }\n  },\n  {\n    \"key\": \"q38\",\n    \"label_snippet\": \"algorithme\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Une suite d’instructions permettant de résoudre un problème\": 1,\n      \"Un virus informatique\": 0,\n      \"Un langage de programmation complet\": 0,\n      \"Un ensemble de règles utilisées par les moteurs de recherche\": 1,\n      \"Un robot physique\": 0.5,\n      \"Une recette de cuisine; par analogie\": 1\n    }\n  },\n  {\n    \"key\": \"q39\",\n    \"label_snippet\": \"intelligence artificielle\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Un système capable de simuler certaines fonctions humaines (ex : reconnaître une image)\": 1,\n      \"Un humain qui pense très vite\": 0,\n      \"Un programme qui apprend à partir de données\": 1,\n      \"Une machine qui ne peut jamais se tromper\": 0,\n      \"Des applications comme la reconnaissance vocale ou les chatbots\": 1,\n      \"Un ordinateur utilisé uniquement dans les films\": 0\n    }\n  },\n{ \n    \"key\": \"q40\",\n    \"label_snippet\": \"“e-administration”\",\n    \"theme\": \"culture_numerique\",\n    \"scoring_mode\": \"max\",\n    \"options\": {\n      \"Accéder aux services publics en ligne (impôts; CAF; etc.)\": 1,\n      \"Gérer une administration dans un jeu vidéo\": 0,\n      \"Déposer ses déclarations sans se déplacer\": 1,\n      \"Obtenir un rendez-vous à la mairie par téléphone\": 0,\n      \"Télécharger des formulaires officiels\": 1,\n      \"Envoyer un courrier postal au centre administratif\": 0\n    }\n\n      }\n    ]\n  }\n}\n",
+        "includeOtherFields": "={{ true }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "e009f338-d037-4dae-8d4b-090ba9ee3de9",
+      "name": "Scoring System"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Helpers ---\nconst norm = (s) => String(s ?? \"\")\n  .normalize(\"NFD\")\n  .replace(/\\p{Diacritic}/gu, \"\")\n  .replace(/[“”«»\"']/g, \"\")\n  .replace(/\\s+/g, \" \")\n  .trim()\n  .toLowerCase();\n\nconst input = items[0].json; // ⚠️ Run Once for All Items\nconst rules = input.rules;\nif (!rules) {\n  return [{ json: { error: \"Aucune règle trouvée dans input.rules\" } }];\n}\n\nconst thresholds = rules.thresholds || { beginner: 40, intermediate: 70 };\nconst questions = rules.questions || [];\nconst horodateur = input[\"Horodateur\"] || null;\nconst email = input[\"Adresse e-mail\"] || \"\";   // 👈 récupère l’email\n\nfunction findAnswers(label) {\n  const needle = norm(label);\n  for (const k of Object.keys(input)) {\n    if (k.endsWith(\"__arr\") && norm(k.replace(\"__arr\", \"\")).includes(needle)) {\n      return input[k];\n    }\n  }\n  console.log(\"🔎 No match for:\", needle, \"in keys:\", Object.keys(input));\n  return [];\n}\n\n// --- INIT blocs ---\nconst blocs = {\n  q01_q10: { score: 0, max: 0 },\n  q11_q20: { score: 0, max: 0 },\n  q21_q30: { score: 0, max: 0 },\n  q31_q40: { score: 0, max: 0 },\n};\n\nconst details = [];\nlet totalScore = 0;\nlet totalMax = 0;\n\nfor (const q of questions) {\n  const options = q.options || {};\n  const answers = findAnswers(q.label_snippet || q.key);\n  const answersNorm = new Set(answers.map(norm));\n\n  const maxForQ = Object.values(options)\n    .map(v => Number(v) || 0)\n    .filter(v => v > 0)\n    .reduce((a, b) => a + b, 0);\n\n  let scoreForQ = 0;\n  for (const [rawLabel, val] of Object.entries(options)) {\n    const label = norm(rawLabel);\n    if (answersNorm.has(label)) {\n      scoreForQ += Number(val) || 0;\n    }\n  }\n\n  if (scoreForQ > maxForQ) scoreForQ = maxForQ;\n\n  totalScore += scoreForQ;\n  totalMax += maxForQ;\n\n  // Bloc ?\n  const qNum = Number(q.key.replace(\"q\", \"\"));\n  let bloc = null;\n  if (qNum >= 1 && qNum <= 10) bloc = \"q01_q10\";\n  else if (qNum >= 11 && qNum <= 20) bloc = \"q11_q20\";\n  else if (qNum >= 21 && qNum <= 30) bloc = \"q21_q30\";\n  else if (qNum >= 31 && qNum <= 40) bloc = \"q31_q40\";\n\n  if (bloc) {\n    blocs[bloc].score += scoreForQ;\n    blocs[bloc].max += maxForQ;\n  }\n\n  details.push({\n    key: q.key,\n    label: q.label_snippet,\n    theme: q.theme || null,\n    answers,\n    score: scoreForQ,\n    max: maxForQ\n  });\n}\n\n// --- Calculs finaux ---\nconst percent = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;\nlet level = \"advanced\";\nif (percent < thresholds.beginner) level = \"beginner\";\nelse if (percent < thresholds.intermediate) level = \"intermediate\";\n\nfunction blocInfo(b) {\n  const bloc = blocs[b];\n  return {\n    score: bloc.score,\n    max: bloc.max,\n    percent: bloc.max > 0 ? Math.round((100 * bloc.score) / bloc.max) : 0\n  };\n}\n\n// --- Sortie ---\nreturn [{\n  json: {\n    horodateur,\n    email,  // 👈 adresse e-mail passée de l’input à l’output\n    total_score: totalScore,\n    total_max: totalMax,\n    percent,\n    level,\n    blocks: {\n      q01_q10: blocInfo(\"q01_q10\"),\n      q11_q20: blocInfo(\"q11_q20\"),\n      q21_q30: blocInfo(\"q21_q30\"),\n      q31_q40: blocInfo(\"q31_q40\"),\n    },\n    details\n  }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        -32
+      ],
+      "id": "10cb08fb-49bb-443e-9141-ae10a5b044ae",
+      "name": "AnalyseS"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- 1) Ne garder que la dernière ligne selon \"Horodateur\" (format FR) ---\nfunction parseFRDatetime(s) {\n  if (!s) return 0;\n  const m = String(s).match(/(\\d{2})\\/(\\d{2})\\/(\\d{4})\\s+(\\d{2}):(\\d{2}):(\\d{2})/);\n  if (!m) return 0;\n  const [ , dd, MM, yyyy, HH, mm, ss ] = m.map(Number);\n  return new Date(yyyy, MM - 1, dd, HH, mm, ss).getTime();\n}\n\nconst all = $items();\nif (!all.length) return [];\n\n// Trie les lignes par date croissante\nall.sort((a, b) => parseFRDatetime(a.json.Horodateur) - parseFRDatetime(b.json.Horodateur));\nconst last = all[all.length - 1].json;\n\n// --- 2) Extraire uniquement les champs utiles ---\nconst SEP = \", \";\nconst out = {\n  Horodateur: last[\"Horodateur\"],\n  \"Adresse e-mail\": last[\"Adresse e-mail\"] || \"\"   // 👈 ajout de l'adresse e-mail\n};\n\nfor (const [key, val] of Object.entries(last)) {\n  if (key === \"Horodateur\" || key === \"Adresse e-mail\") continue; // 👈 on ne les retrait pas\n\n  if (typeof val === \"string\" && val.includes(SEP)) {\n    out[`${key}__arr`] = val.split(SEP).map(s => s.trim()).filter(Boolean);\n  }\n}\n\nreturn [{ json: out }];\n\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -32
+      ],
+      "id": "1520bc1d-0ce5-45bb-8b9b-1a02ada05e4b",
+      "name": "Last Questionnaire Retrieval"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1-fUTmwyK6b1H-AvH12BvyPwBpB-u2tau_FwIyZQxEBc",
+          "mode": "list",
+          "cachedResultName": "Modèle bilans questionnaires",
+          "cachedResultUrl": "https://docs.google.com/presentation/d/1-fUTmwyK6b1H-AvH12BvyPwBpB-u2tau_FwIyZQxEBc/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        944,
+        64
+      ],
+      "id": "9baa8706-47ff-4bbd-87b0-bee65c16a6f1",
+      "name": "Copy File Slide Model",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "HXU4UVHEKoqRGjM7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        752,
+        -192
+      ],
+      "id": "76263eec-3abe-4a93-86bc-4345209826ba",
+      "name": "Merge Placeholders"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Last Questionnaire Retrieval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Graph URL create": {
+      "main": [
+        [
+          {
+            "node": "Copy File Slide Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Get Slides": {
+      "main": [
+        [
+          {
+            "node": "Extract images from slides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "placeholders": {
+      "main": [
+        [
+          {
+            "node": "Merge Placeholders",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Average Placeholders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Http Request Post Slides": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request Transform PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract images from slides": {
+      "main": [
+        [
+          {
+            "node": "Http Request Post Slides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Transform PDF": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build_report": {
+      "main": [
+        [
+          {
+            "node": "placeholders",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Average Placeholders": {
+      "main": [
+        [
+          {
+            "node": "Merge Placeholders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scoring System": {
+      "main": [
+        [
+          {
+            "node": "AnalyseS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AnalyseS": {
+      "main": [
+        [
+          {
+            "node": "Build_report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Last Questionnaire Retrieval": {
+      "main": [
+        [
+          {
+            "node": "Scoring System",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy File Slide Model": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request Get Slides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Placeholders": {
+      "main": [
+        [
+          {
+            "node": "Graph URL create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d06091a6-bd35-4102-b940-b19ee46d66e4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bbebae8d6a8ec223e096c5f16922e3f9cd230a3402a93eda1f2057be674247c1"
+  },
+  "id": "ECSPk4UTC5DnnXFg",
+  "tags": []
+}

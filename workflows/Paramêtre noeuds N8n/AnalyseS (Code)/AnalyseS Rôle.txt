@@ -1,0 +1,189 @@
+🟠 AnalyseS
+
+Rôle
+
+Ce nœud est un nœud Code (JavaScript) en mode Run Once for All Items.
+
+
+Il transforme les réponses du participant en résultats chiffrés :
+
+ . Score total et score maximum possible
+
+ . Pourcentage de réussite et niveau (débutant, intermédiaire, avancé)
+
+ . Répartition par blocs de 10 questions (q01–q10, q11–q20, q21–q30, q31–q40)
+
+ . Détails de chaque question (réponses choisies, score obtenu, score max, thème associé)
+
+
+
+
+Fonctionnement du script
+
+
+1) Normalisation des textes
+
+-----------------------------------
+const norm = (s) => String(s ?? "")
+  .normalize("NFD")
+  .replace(/\p{Diacritic}/gu, "")
+  .replace(/[“”«»"']/g, "")
+  .replace(/\s+/g, " ")
+  .trim()
+  .toLowerCase();
+-----------------------------------
+
+ . Supprime les accents, espaces multiples, guillemets → comparaison plus robuste.
+
+ . Permet de matcher les réponses même si elles diffèrent légèrement en écriture.
+
+
+
+
+2) Initialisation des données
+
+--------------------------------------------------------------------------
+const input = items[0].json;
+const rules = input.rules;
+if (!rules) {
+  return [{ json: { error: "Aucune règle trouvée dans input.rules" } }];
+}
+
+const thresholds = rules.thresholds || { beginner: 40, intermediate: 70 };
+const questions = rules.questions || [];
+const horodateur = input["Horodateur"] || null;
+const email = input["Adresse e-mail"] || "";
+--------------------------------------------------------------------------
+
+ . Récupère le barème (rules) du nœud Scoring System.
+
+ . Définit les seuils des niveaux.
+
+ . Capture l’horodateur et l’email pour traçabilité.
+
+
+
+3) Retrouver les réponses données
+
+-------------------------------------------------------------------------------
+function findAnswers(label) {
+  const needle = norm(label);
+  for (const k of Object.keys(input)) {
+    if (k.endsWith("__arr") && norm(k.replace("__arr", "")).includes(needle)) {
+      return input[k];
+    }
+  }
+  console.log("🔎 No match for:", needle, "in keys:", Object.keys(input));
+  return [];
+}
+--------------------------------------------------------------------------------
+
+ . Recherche la question correspondante dans l’input.
+
+ . Retourne les réponses choisies (sous forme de tableau).
+
+
+
+4) Boucle sur toutes les questions
+
+ . Pour chaque question, le script :
+
+    1- Récupère les réponses données.
+
+    2- Compare aux options possibles (options) et calcule le score.
+
+    3- Limite le score à la valeur max autorisée.
+
+    4- Ajoute le score au total global.
+
+    5- Range le résultat dans le bon bloc de 10 questions.
+
+    6- Stocke un détail complet (utile pour les bilans personnalisés).
+
+
+Exemple de détail :
+
+
+#################################################################
+{
+  "key": "q7",                          ## Exemple (Not Use) ##
+  "label": "reconnaître si un fichier",
+  "theme": "bases_informatique",
+  "answers": ["En regardant son extension (.jpg; .docx; .mp4)"],
+  "score": 1,
+  "max": 1
+}
+#################################################################
+
+
+
+5) Calculs finaux
+
+-----------------------------------------------------------------------------
+const percent = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;
+let level = "advanced";
+if (percent < thresholds.beginner) level = "beginner";
+else if (percent < thresholds.intermediate) level = "intermediate";
+-----------------------------------------------------------------------------
+
+ . Pourcentage = (score / max) * 100.
+
+ . Niveau basé sur les seuils (beginner, intermediate, sinon advanced).
+
+
+
+
+6) Sortie structurée
+
+------------------------------------
+return [{
+  json: {
+    horodateur,
+    email,
+    total_score: totalScore,
+    total_max: totalMax,
+    percent,
+    level,
+    blocks: {
+      q01_q10: blocInfo("q01_q10"),
+      q11_q20: blocInfo("q11_q20"),
+      q21_q30: blocInfo("q21_q30"),
+      q31_q40: blocInfo("q31_q40"),
+    },
+    details
+  }
+}];
+-------------------------------------
+
+
+Exemple de sortie :
+
+############################################################
+{
+  "horodateur": "14/09/2025 00:36:15",
+  "email": "exemple@mail.com",
+  "total_score": 70.5,
+  "total_max": 119.5,        ## Exemple (Not Use) ##
+  "percent": 59,
+  "level": "intermediate",
+  "blocks": {
+    "q01_q10": { "score": 14.5, "max": 26.5, "percent": 55 },
+    "q11_q20": { "score": 18, "max": 27.5, "percent": 65 },
+    "q21_q30": { "score": 20, "max": 31.5, "percent": 63 },
+    "q31_q40": { "score": 18, "max": 34, "percent": 53 }
+  },
+  "details": [...]
+}
+###############################################################
+
+
+
+Points clés
+
+ . ✅ Normalisation des réponses → tolérant aux variations.
+
+ . ✅ Gestion fine des blocs pour analyser la progression.
+
+ . ✅ Stockage des détails → utile pour rapports personnalisés (PDF/Slides).
+
+ . ⚠️ Dépend fortement de la cohérence entre le JSON du barème et les libellés des réponses.

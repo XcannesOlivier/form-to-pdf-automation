@@ -1,0 +1,126 @@
+🔵 Average Placeholders
+
+Rôle
+
+Ce nœud est un nœud Code (JavaScript) en mode Run Once for All Items.
+Il prend en entrée les lignes issues du nœud Get row(s) in sheet (qui contient les moyennes calculées par sous-thème ou par session), 
+et les transforme en placeholders utilisables dans le rapport final.
+
+
+Fonctionnement du script
+
+
+1) Entrée
+
+-------------------------------------------------
+const rows = $input.all().map(item => item.json);
+-------------------------------------------------
+
+ . Récupère toutes les lignes fournies par Google Sheets.
+
+ . Chaque ligne contient :
+
+#################################################
+{
+  "row_number": 2,
+  "clé": "S1_SUB1_AVG",
+  "somme": 550,           ## Exemple (Not Use) ##
+  "n": 7,
+  "moyenne": 81
+}
+#################################################
+
+
+
+2) Helper pour formatage %
+
+-----------------------------------------
+function pctFmt(n) {
+  return `${Number(n || 0).toFixed(0)}%`;
+}
+-----------------------------------------
+
+ . Transforme une valeur numérique en pourcentage arrondi (ex. 81 → 81%).
+
+
+
+
+3) Construction du dictionnaire
+
+--------------------------------------------
+const placeholders = {};
+
+for (const r of rows) {
+  if (r.clé && r.moyenne !== undefined) {
+    placeholders[r.clé] = pctFmt(r.moyenne);
+  }
+}
+--------------------------------------------
+
+
+ . Vérifie que la ligne contient une clé et une moyenne.
+
+ . Exemple : si clé = "S1_SUB1_AVG" et moyenne = 81, alors :
+
+############################################
+"S1_SUB1_AVG": "81%" ## Exemple (Not Use) ##
+############################################
+
+
+
+4) Sortie
+
+-----------------
+return [{
+  json: {
+    placeholders
+  }
+}];
+-----------------
+
+ . Produit un seul objet avec toutes les moyennes formatées.
+
+Exemple de Sortie
+
+#################################################
+{
+  "placeholders": {
+    "S1_SUB1_AVG": "81%",
+    "S1_SUB2_AVG": "75%",
+    "S1_SUB3_AVG": "87%",
+    "S2_SUB1_AVG": "74%",
+    "S2_SUB2_AVG": "80%",
+    "S3_SUB1_AVG": "70%", ## Exemple (Not Use) ##
+    "S3_SUB2_AVG": "85%",
+    "S3_SUB3_AVG": "79%",
+    "S4_SUB1_AVG": "91%",
+    "S4_SUB2_AVG": "76%",
+    "S4_SUB3_AVG": "68%"
+  }
+}
+##################################################
+
+
+
+
+Fonctionnement dans le workflow
+
+ 1- Get row(s) in sheet lit les moyennes stockées dans Google Sheets.
+
+ 2- Average Placeholders convertit ces moyennes en placeholders formatés.
+
+ 3- Merge Placeholders fusionne ces données avec les placeholders individuels (issus de placeholders) 
+ pour construire un dictionnaire complet (individu + groupe).
+
+
+
+
+Points clés
+
+ . ✅ Facilite la comparaison entre score individuel et moyenne du groupe.
+
+ . ✅ Génère des clés standardisées (Sx_SUBy_AVG).
+
+ . ✅ Compatible directement avec les modèles Google Slides/Docs.
+
+ . ⚠️ Les clés de la feuille Google Sheets doivent être cohérentes avec les placeholders attendus.

@@ -1,0 +1,180 @@
+🟢 Build_report
+
+Rôle
+
+
+Ce nœud est un nœud Code (JavaScript) en mode Run Once for All Items.
+Il construit le rapport final à partir des scores calculés par AnalyseS.
+
+Ce rapport inclut :
+
+ . Score global avec étoiles ★
+
+ . Bilan global générique
+
+ . Résultats par sessions (1 à 4)
+
+ . Résultats par sous-thèmes (3 par session) avec textes de bilan adaptés au niveau
+
+
+
+
+Fonctionnement du script
+
+
+1) Helpers
+
+------------------------------------------------------------------
+const pct   = (s, m) => (m ? +(100 * s / m).toFixed(1) : 0);
+const stars = (p) => p < 40 ? "★☆☆" : p < 70 ? "★★☆" : "★★★";
+------------------------------------------------------------------
+
+ . pct → calcule un pourcentage.
+
+ . stars → attribue un nombre d’étoiles en fonction du score.
+
+
+-------------------------------------------------------------------------
+const genericBilan = (p) =>
+  p < 40 ? "Niveau à consolider : reprenez les bases essentielles."
+: p < 70 ? "Bon socle : poursuivez des exercices ciblés pour progresser."
+         : "Très bonne maîtrise : continuez avec des cas plus avancés.";
+-------------------------------------------------------------------------
+
+ . Texte générique par défaut si aucun bilan spécifique n’existe.
+
+
+--------------------------------------------------------------------------------
+const levelFromPct = (p) =>
+  p < 40 ? "Débutant" : p < 60 ? "En progrès" : p < 80 ? "Compétent" : "Expert";
+const levelKey = (p) =>
+  p < 40 ? "debutant" : p < 60 ? "en_progres" : p < 80 ? "competent" : "expert";
+--------------------------------------------------------------------------------
+
+ . Permet de transformer un % en libellé de niveau ou en clé (utile pour bilans spécifiques).
+
+
+
+2) Bilans spécifiques
+
+---------------------------------------------------------------------------------
+const BILANS = {
+  "1:1": { debutant: "...", en_progres: "...", competent: "...", expert: "..." },
+  "1:2": { ... },
+  ...
+};
+---------------------------------------------------------------------------------
+
+ . Chaque clé = ${sessionId}:${partId} (ex. "2:3" = session 2, sous-thème 3).
+
+ . Chaque niveau (débutant, en_progres, compétent, expert) possède un texte adapté.
+
+ . Exemple :
+
+    . Session 1 / Sous-thème 1 (Navigation & Internet)
+
+       . Débutant → « Bases fragiles : comprendre navigateur, recherche, différence email/URL. »
+
+       . Expert → « Bonne maîtrise : recherche efficace, distinction email/web. Poursuis avec favoris/onglets. »
+
+
+
+
+3) Mapping des questions → sous-thèmes
+
+----------------------------------------------------------------------------------------------
+const EXPLICIT_MAP = {
+  "1": { "1": ["q1","q2","q4"], "2": ["q5","q6","q8"], "3": ["q3","q7","q9","q10"] },
+  "2": { "1": ["q11","q12","q13","q14","q16"], "2": ["q15","q17","q18"], "3": ["q19","q20"] },
+  ...
+};
+----------------------------------------------------------------------------------------------
+
+ . Chaque session est découpée en 3 sous-thèmes avec une liste explicite de questions.
+
+ . Permet de calculer des scores partiels et d’associer un bilan ciblé.
+
+
+
+4) Construction du rapport
+
+---------------------------------------------
+const report = {
+  horodateur: a.horodateur,
+  email: a["email"] || "", 
+  global: {
+    score: a.total_score,
+    max:   a.total_max,
+    pct:   a.percent,
+    level: a.level || levelFromPct(a.percent),
+    stars: stars(a.percent),
+    bilan: genericBilan(a.percent),
+  },
+  sessions: [],
+};
+----------------------------------------------
+
+ . Ajoute score global, niveau, étoiles et bilan générique.
+
+
+
+5) Sessions et sous-thèmes
+
+Pour chaque session (1 à 4) :
+
+ . Récupère les sous-thèmes et calcule leurs scores.
+
+ . Associe un bilan spécifique selon le niveau (si défini dans BILANS).
+
+ . Ajoute tout au rapport.
+
+
+Exemple de sortie :
+
+-----------------------------------------------------------------------------
+{
+  "global": {
+    "score": 70.5,
+    "max": 119.5,
+    "pct": 59,
+    "level": "En progrès",
+    "stars": "★★☆",
+    "bilan": "Bon socle : poursuivez des exercices ciblés pour progresser."
+  },
+  "sessions": [
+    {
+      "id": "1",
+      "label": "Session 1",
+      "total_score": 14.5,
+      "total_max": 26.5,
+      "total_pct": 54.7,
+      "level": "En progrès",
+      "stars": "★★☆",
+      "bilan": "Bon socle : poursuivez des exercices ciblés pour progresser.",
+      "subthemes": [
+        {
+          "id": "1",
+          "label": "Navigation & Internet",
+          "pct": 50,
+          "level": "Débutant",
+          "stars": "★☆☆",
+          "bilan": "Bases fragiles : comprendre navigateur, recherche, différence email/URL."
+        },
+        ...
+      ]
+    }
+  ]
+}
+----------------------------------------------------------------------------------------------
+
+
+
+Points clés
+
+ . ✅ Génère un rapport hiérarchisé (global → sessions → sous-thèmes).
+
+ . ✅ Combine des bilans génériques et des bilans personnalisés selon le niveau.
+
+ . ✅ Produit des étoiles ★ pour faciliter la lecture dans le PDF/Slides.
+
+ . ⚠️ Dépend de la cohérence du EXPLICIT_MAP et des clés définies dans BILANS.

@@ -1,0 +1,102 @@
+🔵 Merge Placeholders
+
+Rôle
+
+
+Ce nœud combine deux sources de placeholders :
+
+ . Input 1 (Average Placeholders) → les moyennes calculées par sous-thème/session (par ex. S1_SUB1_AVG = 81%).
+
+ . Input 2 (placeholders) → les valeurs individuelles de l’utilisateur (par ex. S1_SUB1_PCT = 50%, S1_SUB1_STARS = ★★★, 
+ S1_SUB1_BILAN = "Bases acquises mais confusions...").
+
+L’objectif est de produire un dictionnaire unifié qui contiendra à la fois les données individuelles et les données de référence (moyennes).
+
+
+
+
+Paramétrage du nœud
+
+ . Mode : Combine
+
+ . Combine By : All Possible Combinations
+
+    Cela permet de fusionner toutes les paires Input 1 et Input 2 sans condition.
+
+ . Options : aucune propriété supplémentaire.
+
+Exemple d’entrée
+
+Input 1 (Average Placeholders)
+
+##################################################
+{
+  "placeholders": {
+    "S1_SUB1_AVG": "81%",
+    "S1_SUB2_AVG": "75%",  ## Exemple (Not Use) ##
+    "S1_SUB3_AVG": "87%",
+    "S2_SUB1_AVG": "74%"
+  }
+}
+###################################################
+
+
+Input 2 (placeholders)
+
+#########################################################
+{
+  "placeholders": {
+    "DATE": "14/09/2025 00:36:15",
+    "EMAIL": "desruelleolivier@gmail.com",
+    "GLOBAL_PCT": "59%",
+    "S1_TITLE": "Session 1",      ## Exemple (Not Use) ##
+    "S1_SUB1_TITLE": "Navigation & Internet",
+    "S1_SUB1_PCT": "50%",
+    "S1_SUB1_STARS": "★★★",
+    "S1_SUB1_BILAN": "Bases acquises mais confusions..."
+  }
+}
+########################################################
+
+
+Exemple de sortie
+
+#########################################################
+{
+  "placeholders": {
+    "S1_SUB1_AVG": "81%",
+    "S1_SUB2_AVG": "75%",         ## Exemple (Not Use) ##
+    "S1_SUB3_AVG": "87%",
+    "S2_SUB1_AVG": "74%",
+    "DATE": "14/09/2025 00:36:15",
+    "EMAIL": "desruelleolivier@gmail.com",
+    "GLOBAL_PCT": "59%",
+    "S1_TITLE": "Session 1",
+    "S1_SUB1_TITLE": "Navigation & Internet",
+    "S1_SUB1_PCT": "50%",
+    "S1_SUB1_STARS": "★★★",
+    "S1_SUB1_BILAN": "Bases acquises mais confusions..."
+  }
+}
+#########################################################
+
+
+
+
+Fonctionnement dans le workflow
+
+ 1- placeholders génère les valeurs individuelles du participant.
+
+ 2- Average Placeholders fournit les moyennes de groupe.
+
+ 3- Merge Placeholders fusionne les deux sources en un seul objet JSON.
+
+ 4- Le dictionnaire final est utilisé ensuite par Graph URL create et Copy File Slide Model pour remplir les modèles Google Slides/PDF.
+
+Points clés
+
+ . ✅ Assure la cohérence des placeholders en regroupant individu + moyenne.
+
+ . ✅ Simplifie la substitution dans les modèles (toutes les valeurs sont disponibles au même endroit).
+
+ . ⚠️ En cas de doublons de clés, les valeurs du dernier input (Input 2) écrasent celles du premier (Input 1).

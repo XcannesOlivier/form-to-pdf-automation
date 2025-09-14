@@ -1,0 +1,127 @@
+🟣 Scoring System
+
+Rôle
+
+Ce nœud est un nœud Set (JSON) qui contient les règles d’évaluation du questionnaire.
+Il sert de barème pour transformer les réponses brutes du participant 
+en un système de points :
+
+ . Chaque question a une clé (q1, q2, …, q40)
+
+ . Chaque option de réponse est associée à un score (0, 0.5 ou 1)
+
+ . Les scores sont regroupés par thème (bases_web, bases_informatique, cybersécurité, culture_numérique)
+
+ . Le résultat final permet de calculer un score global et par thème, ainsi qu’un niveau (débutant, intermédiaire, avancé).
+
+
+Structure du JSON
+
+1) Règles globales
+
+#######################################################
+"rules": {                   ## Exemple Not Use ##
+  "split": ", ", 
+  "thresholds": { "beginner": 40, "intermediate": 70 },
+  "questions": [ ... ]
+}
+#######################################################
+
+ . split : séparateur utilisé pour découper les réponses multi-choix.
+
+ . thresholds : seuils pour définir les niveaux globaux :
+
+    . < 40 → Débutant
+
+    . 40 à 70 → Intermédiaire
+
+    . > 70 → Avancé
+
+
+
+2) Définition d’une question
+
+Exemple avec la q1 – “Naviguer sur Internet” :
+
+################################################################################
+{
+  "key": "q1",
+  "label_snippet": "naviguer sur internet",
+  "theme": "bases_web",                       ## Exemple (Not Use) ##
+  "scoring_mode": "max",
+  "options": {
+    "Utiliser un navigateur (Chrome; Firefox; Edge…) pour visiter des sites": 1,
+    "Cliquer sur des liens pour passer d’une page à l’autre": 1,
+    "Lire un livre de programmation": 0,
+    "Installer un antivirus": 0
+  }
+}
+################################################################################
+
+ . key : identifiant unique de la question.
+
+ . label_snippet : résumé court de la question (sert dans les rapports).
+
+ . theme : thème auquel appartient la question (ici bases_web).
+
+ . scoring_mode :
+
+    . "max" → si plusieurs réponses valides, ne compter que le meilleur score.
+
+    . (autres modes possibles, ex. sum).
+
+ . options : dictionnaire de réponses possibles avec leur score associé.
+
+
+
+
+3) Exemple avec multi-réponses pondérées
+
+#############################################################
+{
+  "key": "q7",
+  "label_snippet": "reconnaître si un fichier",
+  "theme": "bases_informatique",
+  "scoring_mode": "max",           ## Exemple (Not Use) ##
+  "options": {
+    "En regardant son extension (.jpg; .docx; .mp4)": 1,
+    "En ouvrant le fichier dans le logiciel adapté": 1,
+    "Grâce à l’icône du fichier (image; texte; vidéo)": 0.5,
+    "En demandant au voisin": 0,
+    "Tous les fichiers sont identiques": 0
+  }
+}
+##############################################################
+
+➡ Ici, plusieurs réponses peuvent être partiellement correctes (0.5) ou entièrement correctes (1).
+
+
+
+
+Fonctionnement dans le workflow
+
+ . Le nœud Last Questionnaire Retrieval fournit les réponses nettoyées du participant.
+
+ . Le nœud Scoring System applique les règles JSON à ces réponses.
+
+ . En sortie, chaque question reçoit :
+
+    . Son score (0 → 1)
+
+    . Le thème associé
+
+    . Une agrégation possible (score par thème, score global).
+
+
+
+
+Points clés
+
+ . ✅ Les seuils sont centralisés → facile à modifier pour changer les niveaux.
+
+ . ✅ La granularité permet d’affiner les scores (ex. 0.5 pour des réponses partiellement correctes).
+
+ . ✅ La séparation par thème permet des bilans détaillés.
+
+ . ⚠️ Bien vérifier que les intitulés dans options correspondent exactement aux réponses des Google Forms 
+ (mêmes accents, majuscules/minuscules).

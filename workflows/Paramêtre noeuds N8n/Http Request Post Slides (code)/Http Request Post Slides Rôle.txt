@@ -1,0 +1,115 @@
+🟣 Nœud : Http Request Post Slides
+
+
+📌 Rôle
+
+
+Ce nœud est responsable de l’injection dynamique des données et des graphiques dans le modèle Google Slides copié.
+Il utilise l’API Google Slides (presentations.batchUpdate) pour :
+
+ 1- Remplacer les images des espaces réservés (progress bars, graphiques par session, radar global).
+
+ 2- Remplacer le texte des placeholders (EMAIL), (DATE), (S1_SUB1_BILAN), etc. par les vraies valeurs calculées dans les nœuds précédents.
+
+C’est l’étape clé qui transforme le modèle générique en un rapport personnalisé pour le candidat.
+
+
+
+
+
+⚙️ Paramètres principaux
+
+
+Méthode HTTP : POST
+
+URL :
+
+--------------------------------------------------------------------------------------------------------
+https://slides.googleapis.com/v1/presentations/{{ $('Copy File Slide Model').item.json.id }}:batchUpdate
+--------------------------------------------------------------------------------------------------------
+
+
+👉 On cible bien la présentation nouvellement copiée depuis le modèle.
+
+ . Authentification : OAuth2 via Google Slides API.
+
+ . Body Content Type : JSON.
+
+ . Payload : objet { "requests": [...] } contenant toutes les instructions (remplacement images + textes).
+
+
+
+
+🛠️ Logique des requêtes
+
+
+1. 🔄 Remplacement des images dynamiques
+
+Chaque placeholder image du modèle (ex. S1_BAR_IMG, S2_GRAPH_IMG, RADAR_IMG) est remplacé 
+par un graphique généré via QuickChart (nœud Graph URL create).
+Exemple :
+
+##################################################################
+{
+  "replaceImage": {
+    "imageObjectId": "{{ $json.images.S1_BAR_IMG.objectId }}",
+    "imageReplaceMethod": "CENTER_INSIDE",
+    "url": "{{ $('Graph URL create').item.json.S1_PROGRESS_IMG }}"
+  }                     ## Exemple (Not Use) ##
+}
+###################################################################
+
+ . imageObjectId : identifiant de l’objet image dans le slide (trouvé via Extract images from slides).
+
+ . url : l’URL QuickChart générée.
+
+ . imageReplaceMethod : "CENTER_INSIDE" → l’image est insérée sans déformation, centrée dans le cadre.
+
+
+
+👉 Cela couvre :
+
+ . Les progress bars par session (S1_BAR_IMG1, S2_BAR_IMG1, …).
+
+ . Les barres comparatives (S1_GRAPH_IMG, S2_GRAPH_IMG, …).
+
+ . Le radar global (RADAR_IMG).
+
+
+
+
+2. 📝 Remplacement des placeholders texte
+
+Tous les placeholders du modèle (DATE), (EMAIL), (S1_SUB1_BILAN), etc. sont remplacés par les valeurs calculées dans le nœud placeholders.
+Exemple :
+
+#################################################################################
+{
+  "replaceAllText": {
+    "containsText": { "text": "(S1_SUB1_BILAN)", "matchCase": true },
+    "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB1_BILAN }}"
+  }                           ## Exemple (Not Use) ##
+}
+#################################################################################
+
+👉 Le mapping couvre :
+
+ . Les infos globales : (DATE), (EMAIL), (GLOBAL_PCT).
+
+ . Les titres et scores par session : (S1_TITLE), (S2_PCT), etc.
+
+ . Les détails par sous-thème : (S1_SUB2_TITLE), (S1_SUB2_PCT), (S1_SUB2_STARS), (S1_SUB2_BILAN), etc.
+
+
+
+
+
+✅ Sortie
+
+ . La présentation Google Slides est mise à jour avec :
+
+    . Les graphiques personnalisés (progress bars, comparatifs, radar).
+
+    . Les valeurs textuelles (scores, pourcentages, étoiles, bilans).
+
+ . Le rapport devient donc un document entièrement personnalisé prêt à être exporté en PDF.

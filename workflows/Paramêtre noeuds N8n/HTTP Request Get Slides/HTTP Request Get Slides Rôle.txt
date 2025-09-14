@@ -1,0 +1,81 @@
+🟣 Node : HTTP Request Get Slides
+
+Type : HTTP Request
+
+Rôle :
+
+Récupérer la structure complète d’une présentation Google Slides copiée précédemment (id du fichier).
+Ce nœud permet d’obtenir toutes les métadonnées des diapositives : taille de la page, objets graphiques, zones de texte, images, 
+identifiants uniques, etc. Ces informations sont indispensables pour identifier les objectId à remplacer par tes placeholders ou images générées (QuickChart).
+
+
+
+
+
+⚙️ Paramètres configurés
+
+ . Method : GET
+
+ . URL :
+
+-------------------------------------------------------------
+https://slides.googleapis.com/v1/presentations/{{ $json.id }}
+-------------------------------------------------------------
+
+
+👉 L’id est directement transmis depuis le nœud précédent (Copy File Slide Model).
+
+ . Authentication : Predefined Credential Type → Google Slides OAuth2 API
+
+ . Google Slides OAuth2 API : Google Slides account (compte déjà connecté à ton Google).
+
+ . Options :
+
+    . Send Query Parameters : OFF
+
+    . Send Headers : OFF
+
+    . Send Body : OFF
+      → Simple récupération sans paramètres supplémentaires.
+
+
+
+
+
+📤 Sortie (Output)
+
+
+Le JSON retourné contient :
+
+ . presentationId : identifiant du fichier Slides.
+
+ . pageSize : dimensions de la page (en EMUs).
+
+ . slides[] : tableau listant toutes les diapositives.
+
+     . Chaque slide contient un objectId.
+
+     . À l’intérieur : un tableau pageElements[] qui représente tous les objets visuels/textes de la diapo (text box, image, forme, graphique).
+
+     . Chaque pageElement contient :
+
+        . objectId (clé unique de l’élément dans la diapo).
+
+        . size (largeur/hauteur).
+
+        . transform (position X, Y, rotation, etc.).
+
+
+
+
+
+📌 Utilité dans ton workflow
+
+
+Ce nœud est essentiel car :
+
+ . Il récupère tous les objectId des zones de texte et images.
+
+ . Ces objectId servent ensuite dans des requêtes BatchUpdate pour remplacer les placeholders ({{S1_SUB1_PCT}}, {{EMAIL}}, …) ou insérer les URL d’images QuickChart générées.
+
+ . En clair : il “cartographie” la présentation copiée pour que les étapes suivantes puissent injecter ton contenu personnalisé.

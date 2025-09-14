@@ -1,0 +1,449 @@
+{
+  "requests": [
+     {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S1_BAR_IMG1.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S1_PROGRESS_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S2_BAR_IMG1.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S2_PROGRESS_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S3_BAR_IMG1.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S3_PROGRESS_IMG }}"
+      }
+     },
+     {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S4_BAR_IMG1.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S4_PROGRESS_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S1_BAR_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S1_PROGRESS_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S2_BAR_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S2_PROGRESS_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S3_BAR_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S3_PROGRESS_IMG }}"
+      }
+     },
+     {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S4_BAR_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S4_PROGRESS_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.RADAR_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.GLOBAL_RADAR_IMG }}"
+      }
+     },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S1_GRAPH_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S1_GRAPH_IMG }}"
+      }
+    },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S2_GRAPH_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S2_GRAPH_IMG }}"
+      }
+    },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S3_GRAPH_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S3_GRAPH_IMG }}"
+      }
+    },
+    {
+      "replaceImage": {
+        "imageObjectId": "{{ $json.images.S4_GRAPH_IMG.objectId }}",
+        "imageReplaceMethod": "CENTER_INSIDE",
+        "url": "{{ $('Graph URL create').item.json.S4_GRAPH_IMG }}"
+      }
+    },
+     {
+      "replaceAllText": {
+        "containsText": { "text": "(DATE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.DATE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(GLOBAL_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.GLOBAL_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(EMAIL)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.EMAIL }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB1_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB1_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB1_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB1_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB1_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB1_STARS }}"
+      }
+     },
+     {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB1_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB1_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB2_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB2_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB2_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB2_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB2_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB2_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB2_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB2_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB3_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB3_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB3_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB3_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB3_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB3_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S1_SUB3_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S1_SUB3_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB1_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB1_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB1_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB1_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB1_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB1_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB1_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB1_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB2_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB2_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB2_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB2_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB2_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB2_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB2_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB2_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB3_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB3_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB3_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB3_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB3_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB3_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S2_SUB3_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S2_SUB3_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB1_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB1_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB1_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB1_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB1_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB1_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB1_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB1_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB2_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB2_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB2_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB2_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB2_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB2_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB2_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB2_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB3_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB3_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB3_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB3_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB3_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB3_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S3_SUB3_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S3_SUB3_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB1_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB1_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB1_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB1_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB1_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB1_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB1_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB1_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB2_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB2_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB2_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB2_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB2_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB2_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB2_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB2_BILAN }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB3_TITLE)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB3_TITLE }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB3_PCT)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB3_PCT }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB3_STARS)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB3_STARS }}"
+      }
+    },
+    {
+      "replaceAllText": {
+        "containsText": { "text": "(S4_SUB3_BILAN)", "matchCase": true },
+        "replaceText": "{{ $('placeholders').item.json.placeholders.S4_SUB3_BILAN }}"
+      }
+    }
+  ]
+}

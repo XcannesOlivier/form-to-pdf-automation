@@ -1,0 +1,170 @@
+🔵 Graph URL create
+
+Rôle
+
+
+Ce nœud Code (JavaScript) en mode Run Once for All Items génère automatiquement 
+les URLs QuickChart pour produire différents graphiques à partir des placeholders fusionnés :
+
+ . Graphiques comparatifs (barres : utilisateur vs moyenne).
+
+ . Progress bars (pourcentage de réussite par session).
+
+ . Radar global (vue d’ensemble des compétences par domaine).
+
+Les URLs sont ensuite utilisées dans Google Slides/Docs pour insérer des graphiques dynamiques dans le rapport PDF.
+
+
+
+
+Étapes principales du script
+
+
+1) Données d’entrée
+
+----------------------------------------
+const report = $json.placeholders || {};
+----------------------------------------
+
+ . Récupère tous les placeholders déjà fusionnés dans Merge Placeholders (individuels + moyennes).
+
+ . Exemple attendu :
+
+    . S1_SUB1_PCT = "55%"
+
+    . S1_SUB1_AVG = "81%"
+
+    . S1_PCT = "59%"
+
+
+
+
+2) Palette de couleurs
+
+-------------------------------------------
+const colors = {
+  S1: "rgba(75,192,192,1)",   // vert
+  S2: "rgba(255,99,132,1)",   // rouge
+  S3: "rgba(255,159,64,1)",   // orange
+  S4: "rgba(54,162,235,1)",   // bleu
+};
+-------------------------------------------
+
+ . Chaque session a une couleur unique pour la cohérence visuelle.
+
+
+
+
+3) Fonctions de génération de graphiques
+
+ . Barres comparatives (user vs moyenne)
+
+---------------------------------------------------------------------------------------
+function compareUrl(sectionId, labels, valuesUser, valuesAvg, colorUser) {
+  return `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify({
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Vos résultats', data: valuesUser, backgroundColor: colorUser },
+      { label: 'Moyenne', data: valuesAvg, backgroundColor: 'rgba(128,128,128,0.7)' }
+    ]}
+  }))}`;
+}
+----------------------------------------------------------------------------------------
+
+
+ . Radar global
+
+-----------------------------------------
+function radarUrl(labels, values) { ... }
+-----------------------------------------
+
+→ Affiche les 4 grandes compétences sous forme de toile d’araignée.
+
+ . Progress bar (par session)
+
+---------------------------------------------------
+function progressUrl(sessionId, pct, color) { ... }
+---------------------------------------------------
+
+→ Barre horizontale unique avec un pourcentage clair (utile pour les slides).
+
+
+
+
+
+4) Boucle par session (S1 → S4)
+
+---------------------------------------------------------------------
+for (let i = 1; i <= 4; i++) {
+  const key = `S${i}`;
+  const labels = sectionLabels[key];        // titres des sous-thèmes
+  const valuesUser = [...];                 // % utilisateur
+  const valuesAvg = [...];                  // % moyenne
+  const colorUser = colors[key];
+
+  out[`${key}_GRAPH_IMG`] = compareUrl(...);     // graphe comparatif
+  out[`${key}_PROGRESS_IMG`] = progressUrl(...); // progress bar
+}
+----------------------------------------------------------------------
+
+
+
+
+5) Graphe radar global
+
+--------------------------------------------------------------
+const radarLabels = [
+  "Compétences numériques de base",
+  "Communication & collaboration en ligne",
+  "Sécurité numérique & protection des données",
+  "Culture numérique & usages avancés"
+];
+const radarValues = radarLabels.map((_, i) =>
+  Number(String(report[`S${i+1}_PCT`] || "0").replace("%",""))
+);
+out["GLOBAL_RADAR_IMG"] = radarUrl(radarLabels, radarValues);
+--------------------------------------------------------------
+
+
+Exemple de sortie
+
+#######################################################
+{
+  "S1_GRAPH_IMG": "https://quickchart.io/chart?...",
+  "S1_PROGRESS_IMG": "https://quickchart.io/chart?...",
+  "S2_GRAPH_IMG": "https://quickchart.io/chart?...",
+  "S2_PROGRESS_IMG": "https://quickchart.io/chart?...",
+  "S3_GRAPH_IMG": "https://quickchart.io/chart?...",
+  "S3_PROGRESS_IMG": "https://quickchart.io/chart?...",
+  "S4_GRAPH_IMG": "https://quickchart.io/chart?...",
+  "S4_PROGRESS_IMG": "https://quickchart.io/chart?...",
+  "GLOBAL_RADAR_IMG": "https://quickchart.io/chart?..."
+
+                    ## Exemple (Not Use) ##
+}
+########################################################
+
+
+
+
+Fonctionnement dans le workflow
+
+ 1- Merge Placeholders → fournit données individuelles + moyennes.
+
+ 2- Graph URL create → génère tous les liens QuickChart (images prêtes à intégrer).
+
+ 3- Copy File Slide Model → insère ces images dans les slides (placeholders d’images).
+
+
+
+
+
+Points clés
+
+ . ✅ Les graphiques sont générés à la volée via QuickChart.
+
+ . ✅ Comparaison claire entre résultats individuels et moyennes.
+
+ . ✅ Donne à la fois une vision globale (radar) et détaillée (par sous-thème).
+
+ . ⚠️ Les URLs QuickChart peuvent devenir longues → penser à un éventuel raccourcissement si nécessaire.

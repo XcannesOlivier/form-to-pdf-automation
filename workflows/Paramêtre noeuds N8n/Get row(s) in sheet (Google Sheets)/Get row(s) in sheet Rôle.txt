@@ -1,0 +1,86 @@
+🟢 Get row(s) in sheet
+
+Rôle
+
+Ce nœud est un nœud Google Sheets configuré pour l’opération Get Row(s).
+Il permet de lire les valeurs stockées dans une feuille Google Sheets externe contenant les moyennes globales 
+(scores moyens par sous-thème, par session, etc.).
+Ces données servent ensuite à générer des comparatifs (individu vs moyenne du groupe).
+
+
+
+Configuration utiliséé
+
+
+Credential to connect with :
+
+ . Google Sheets account → le compte Google connecté à n8n.
+
+ . Resource :
+    Sheet Within Document → on lit directement une feuille d’un fichier précis.
+
+ . Operation :
+    Get Row(s) → récupère toutes les lignes de la feuille.
+
+ . Document :
+    Sélectionné depuis la liste → moyennes_sousthemes_questionnaires.
+    👉 Ce document contient des agrégats statistiques (sommes, effectifs, moyennes).
+
+ . Sheet :
+    Feuille 1 → la feuille spécifique qui stocke les moyennes par clé (clé, somme, n, moyenne).
+
+ . Filters :
+    Aucun filtre → toutes les lignes sont lues.
+
+ . Combine Filters :
+    AND (par défaut).
+
+ . Options :
+   Aucune option activée.
+
+
+
+
+Exemple de données récupérées
+
+Extrait d’une ligne de sortie :
+
+###################################################
+{
+  "row_number": 2,
+  "clé": "S1.SUB1.AVG",    ## Exemple (Not Use) ##
+  "somme": 550,
+  "n": 7,
+  "moyenne": 81
+}
+###################################################
+
+ . clé : identifiant du sous-thème ou session (ex. S1.SUB1.AVG → moyenne du sous-thème 1 de la session 1).
+
+ . somme : somme des scores cumulés sur tous les participants.
+
+ . n : nombre de participants pris en compte.
+
+ . moyenne : moyenne arithmétique calculée (somme / n).
+
+
+
+
+Fonctionnement dans le workflow
+
+ 1- AnalyseS et Build_report produisent les scores d’un candidat.
+
+ 2- Get row(s) in sheet récupère les valeurs de référence (moyennes).
+
+ 3- Le nœud suivant (Average Placeholders) formatera ces données en placeholders exploitables dans le rapport.
+
+
+
+
+Points clés
+
+ . ✅ Permet d’intégrer une comparaison candidat vs moyenne dans le rapport final.
+
+ . ✅ Structure flexible : il suffit de maintenir la feuille moyennes_sousthemes_questionnaires à jour.
+
+ . ⚠️ Les clés dans la colonne clé doivent être cohérentes avec celles attendues par le workflow (ex. S1_SUB1_AVG).

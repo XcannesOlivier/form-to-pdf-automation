@@ -1,0 +1,107 @@
+📖 Mode d’emploi – Génération automatique de bilans de compétences numériques
+
+
+1. Préparer les outils
+
+ . Créez un compte Google si ce n’est pas déjà fait.
+
+ . Installez n8n cloud.
+
+ . Activez les APIs nécessaires : Google Sheets, Google Slides, Gmail.
+
+👉 Objectif : tout est prêt pour automatiser.
+
+
+
+2. Créer le questionnaire
+
+ 1- Ouvrez Google Forms.
+
+ 2- Cliquez sur + Nouveau formulaire.
+
+ 3- Ajoutez les questions (voir exemple fourni).
+
+ 4- Activez la collecte des emails obligatoires.
+
+ Exemple de lien pour répondre au questionnaire :
+ https://docs.google.com/forms/d/e/1FAIpQLSdUS0Fcr3Ia8wjKnvO6YCPgoswLf5J2ZD8WqyZBW8VNvNSrUw/viewform?usp=header
+
+👉 Objectif : le questionnaire est prêt à collecter les réponses.
+
+
+
+3. Connecter Google Sheets
+
+ 1- Dans Google Forms, allez dans Réponses → Afficher dans Sheets.
+
+ 2- Vérifiez que chaque réponse s’enregistre bien dans le tableau.
+
+👉 Objectif : vos données sont sauvegardées automatiquement.
+
+
+
+4. Créer le modèle Google Slides
+
+ 1- Ouvrez Google Slides.
+
+ 2- Créez une présentation appelée : Modèle bilans questionnaires.
+
+ 3- Ajoutez vos slides (voir modèles fournis).
+
+ 4- Remplacez les textes et images par des placeholders entre parenthèses :
+
+ . (EMAIL)
+
+ . (GLOBAL_PCT)
+
+ . (S1_SUB1_BILAN)
+
+ . (S1_GRAPH_IMG)
+
+👉 Objectif : le modèle est prêt pour recevoir les résultats.
+
+
+
+5. Configurer n8n (étapes clés)
+
+Chaque étape correspond à un bloc (node) :
+
+ . Google Sheets Trigger : récupère chaque nouvelle réponse.
+
+ . Scoring System : calcule les scores.
+
+ . Graph URL create : génère les graphiques avec QuickChart.
+
+ . Copy File Slide Model : duplique le modèle Google Slides.
+
+ . HTTP Request Get Slides : récupère la structure des slides.
+
+ . Extract images from slides : détecte les zones d’images.
+
+ . HTTP Request Post Slides : remplace les textes et images par les résultats.
+
+ . HTTP Request Transform PDF : exporte le document en PDF.
+
+ . Send a message (Gmail) : envoie le rapport au participant.
+
+👉 Objectif : automatiser la génération et l’envoi du rapport.
+
+
+
+6. Tester le workflow
+
+ 1- Faites une réponse test au formulaire.
+
+ 2- Lancez le workflow dans n8n.
+
+ 3- Vérifiez que vous recevez bien le PDF par email.
+
+👉 Objectif : tout fonctionne, le système est validé.
+
+
+
+7. Utilisation quotidienne
+
+ . Chaque nouvelle réponse → génère automatiquement un rapport PDF → envoie par email.
+
+ . Vous n’avez rien à faire : c’est 100% automatique.
