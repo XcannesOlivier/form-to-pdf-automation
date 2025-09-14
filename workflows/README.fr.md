@@ -1,4 +1,4 @@
-🌍 Available languages: [English](README.md) | [Français](README.fr.md)
+🌍 Available languages: [English](README.md) | [Français](workflows/README.fr.md)
 
 📊 Évaluation des compétences numériques (Workflow automatisé)
 
@@ -162,6 +162,7 @@ flowchart LR
   "S1_SUB1_STARS": "★★★",
   "S1_SUB1_BILAN": "Bases acquises mais confusions sur URL/email/moteur. Continuez à explorer."
 }
+
 
 
 
