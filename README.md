@@ -1,7 +1,7 @@
 # form-to-pdf-automation
 "Automated n8n workflow to process Google Form responses, evaluate digital skills, generate personalized reports (PDF/Slides), and deliver them via email."
 
-🌍 Available languages: [English](README.md) | [Français](README.fr.md)
+🌍 Available languages: [English](README.md) | [Français](workflows/README.fr.md)
 
 
 📊 Digital Skills Assessment (Automated Workflow)
